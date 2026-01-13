@@ -13,3 +13,13 @@ bool validate_port(const char * port) {
 
     return (true);
 }
+
+bool	validate_password(const std::string& pass)
+{
+	std::regex pattern("^[^\\x00-\\x1F\\s]{4,64}$");
+
+	if (!std::regex_match(pass, pattern))
+        return(print_err("Password has to be between 4-64 characters, no spaces, "
+            "no control characters!",""), false);
+    return true;
+}

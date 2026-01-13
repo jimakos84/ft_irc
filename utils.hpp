@@ -5,5 +5,6 @@
 #include <regex>
 #include <string>
 
-bool validate_port(const char * port);
-void print_err(std::string err_msg, std::string additional_info);
+bool        validate_port(const char * port);
+void        print_err(std::string err_msg, std::string additional_info);
+bool        validate_password(const std::string& pass);
