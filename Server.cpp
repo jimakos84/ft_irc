@@ -5,7 +5,8 @@
 
 static volatile sig_atomic_t    g_running = 1;
 
-static void handleSignal(int signum) {
+static void handleSignal(int signum)
+{
 	(void)signum;
 	g_running = 0;
 }
@@ -19,12 +20,14 @@ static void setNonBlocking(int fd)
 Server::Server(int port, const std::string& password)
 	: _port(port), _password(password), _listenFd(-1) {}
 
-Server::~Server() {
+Server::~Server()
+{
 	if (_listenFd != -1)
 		close(_listenFd);
 }
 
-void    Server::start() {
+void    Server::start()
+{
 	std::signal(SIGINT, handleSignal);
 	_listenFd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_listenFd < 0)
@@ -56,19 +59,22 @@ void    Server::start() {
 	std::cout   << "Server listening on port " << _port << std::endl;
 }
 
-void    Server::run()
+void Server::run()
 {
-	while (g_running) // <-- check the flag
+	while (g_running)
 	{
-		int ready = poll(&_pollFds[0], _pollFds.size(), 1000); // timeout 1s
+		if (_pollFds.empty())
+			continue;
+
+		int ready = poll(&_pollFds[0], _pollFds.size(), 1000);
 		if (ready < 0)
 		{
-			if (errno == EINTR) // poll interrupted by signal
+			if (errno == EINTR)
 				continue;
 			throw std::runtime_error("poll() failed");
 		}
 
-		for (size_t i = 0; i < _pollFds.size(); ++i)
+		for (size_t i = _pollFds.size(); i-- > 0; )
 		{
 			if (_pollFds[i].revents & POLLIN)
 			{
@@ -80,13 +86,13 @@ void    Server::run()
 		}
 	}
 
-	// Clean up sockets when exiting
 	std::cout << "\nShutting down server..." << std::endl;
 	for (auto& pair : _clients)
 		close(pair.first);
 	if (_listenFd != -1)
 		close(_listenFd);
 }
+
 
 void    Server::acceptClient()
 {
@@ -138,7 +144,8 @@ void    Server::receiveFromClient(int fd)
 
 }
 
-bool    Server::isRegistrationCmd(const std::string &cmdName) {
+bool    Server::isRegistrationCmd(const std::string &cmdName)
+{
 	std::string possibleCmd[] = {"PASS", "NICK", "USER"};
 	for (unsigned long i = 0; i < 3; i++) {
 		if (cmdName == possibleCmd[i])
@@ -147,7 +154,8 @@ bool    Server::isRegistrationCmd(const std::string &cmdName) {
 	return (false);
 }
 
-void    Server::commandExecute(Client &client, std::string full_cmd) {
+void    Server::commandExecute(Client &client, std::string full_cmd)
+{
 	std::istringstream iss(full_cmd);
 	std::string cmdName;
 	std::string cmdParam;
@@ -163,8 +171,8 @@ void    Server::commandExecute(Client &client, std::string full_cmd) {
 			if (cmdName == "PASS") {
 				if (cmdParam == _password)
 					client.setPass();
-				// else
-					// 	std::cout << "LOL NO PASS" << std::endl;
+				else
+					client.send("ERROR :Password incorrect\r\n");	
 			}
 	
 			else if (cmdName == "NICK") {

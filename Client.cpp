@@ -68,7 +68,7 @@ void Client::send(const std::string &msg) {
 	// 	print_err("Send failed", "", void(0));
 	// }
 
-	std::cout << "Client: " << _fd << " :: " << msg << std::endl;
+	std::cout << "Client: " << _username << " :: " << msg << std::endl;
 }
 
 
