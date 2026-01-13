@@ -1,7 +1,7 @@
 
 NAME = ircserv
 CC = c++
-CFLAGS = -Wall -Wextra -Werror -std=c++17
+CFLAGS = -Wall -Wextra -Werror -std=c++17 -g
 
 SRC = main.cpp \
        input_validation.cpp \

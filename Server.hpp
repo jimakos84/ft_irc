@@ -17,7 +17,7 @@ private:
     void    acceptClient();
     void    receiveFromClient(int fd);
     void    removeClient(int fd);
-    void    sendToClient(int fd, const std::string& message);
+    // void    sendToClient(int fd, const std::string& message);
 
     int                     _port;
     std::string             _password;
@@ -31,4 +31,6 @@ public:
 
     void    start();
     void    run();
+    void    commandExecute(Client &client, std::string cmd);
+    bool    isRegistrationCmd(const std::string &cmdName);
 };
