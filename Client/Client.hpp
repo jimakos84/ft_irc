@@ -1,4 +1,5 @@
 
+#include "../utils.hpp"
 #include <iostream>
 #include <sys/socket.h>  // for send()
 
@@ -11,10 +12,12 @@ class Client {
 		std::string _hostname;
 		// std::set<std::string> _joined_channels;
 		std::string _buffer;
-		// bool _hasPass;
+		bool _hasPass;
+		bool _hasNick;
+		bool _hasUser;
 		bool _isRegistered;
 		bool _isOperator;
-	
+
 	public:
 		Client(int fd, const std::string& hostname);
 
@@ -22,12 +25,13 @@ class Client {
 		bool completeMessageExists();
 		std::string extractMessage();
 
-		bool _isRegistered() const;
+		bool isRegistered() const;
 
 		//Registration specific functions
 		// void setPass();
 		void setNick(const std::string &nick);
-		void setUser(const std::string &user, const std::string &real);
+		void setUser(const std::string &user);
+		void setReal(const std::string &real);
 		void setRegistered();
 
 		//message formatting for the server reply
