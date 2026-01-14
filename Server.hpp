@@ -10,6 +10,7 @@
 #include <csignal>
 #include "Client.hpp"
 #include "utils.hpp"
+#include "MacrosDefinitions.hpp"
 
 class Server
 {
@@ -20,6 +21,7 @@ private:
     // void    sendToClient(int fd, const std::string& message);
     // void    handleClientComm(int client_fd);
     // void    receiveFromClient(Client &client, int client_fd);
+    void sendWelcomeMsg(Client &client);
 
     int                     _port;
     std::string             _password;

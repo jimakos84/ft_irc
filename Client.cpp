@@ -77,12 +77,11 @@ std::string Client::getReal() const {
 
 
 void Client::send(const std::string &msg) {
-	// ssize_t bytes_sent = ::send(this->_fd, msg.c_str(), msg.size(), 0);
-	// if (bytes_sent == -1) {
-	// 	print_err("Send failed", ""), void(0);
-	// }
+	ssize_t bytes_sent = ::send(this->_fd, msg.c_str(), msg.size(), 0);
+	 if (bytes_sent == -1) {
+	 	print_err("Send failed", ""), void(0);
+	 }
 
-	std::cout << "Client: " << _username << " :: " << msg << std::endl;
+	//std::cout << "Client: " << _username << " :: " << msg << std::endl;
 }
-
 
