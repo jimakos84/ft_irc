@@ -40,6 +40,9 @@ class Client {
 
 		//Get functions
 		int getFd() const;
+		std::string getNick() const;
+		std::string getReal() const;
+		std::string getUser() const;
 
 		//message formatting for the server reply
 		void send(const std::string &msg);

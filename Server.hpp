@@ -33,4 +33,5 @@ public:
     void    run();
     void    commandExecute(Client &client, std::string cmd);
     bool    isRegistrationCmd(const std::string &cmdName);
+    void	startRegistration(Client &client, std::string cmdName, std::vector<std::string> cmdParams);
 };

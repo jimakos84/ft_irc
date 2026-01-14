@@ -20,6 +20,8 @@ std::string Client::extractMessage() {
 	size_t found = _buffer.find("\n");
 	std::string msg = _buffer.substr(0, found);
 	_buffer.erase(0, found + 1);
+	if (!msg.empty() && msg[msg.size() - 1] == '\r')
+		msg.erase(msg.size() - 1);
 	return (msg);
 }
 
@@ -59,6 +61,18 @@ void Client::setReal(const std::string &real) {
 
 int Client::getFd() const {
 	return (this->_fd);
+}
+
+std::string Client::getNick() const {
+	return (this->_nickname);
+}
+
+std::string Client::getUser() const {
+	return (this->_username);
+}
+
+std::string Client::getReal() const {
+	return (this->_realname);
 }
 
 

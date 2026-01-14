@@ -138,11 +138,15 @@ void    Server::receiveFromClient(int fd)
 	while (client.completeMessageExists() == true)
 	{
 		std::string msg = client.extractMessage();
-		std::cout << "\n\n[PARSED] " << msg << std::endl;
+		// std::cout << "\n\n[PARSED] " << msg << std::endl;
 		commandExecute(client, msg);
 	}
+	if (client.isRegistered() == false)
+		removeClient(client.getFd());
 
 }
+
+
 
 bool    Server::isRegistrationCmd(const std::string &cmdName)
 {
@@ -154,46 +158,54 @@ bool    Server::isRegistrationCmd(const std::string &cmdName)
 	return (false);
 }
 
+void	Server::startRegistration(Client &client, std::string cmdName, std::vector<std::string> cmdParams) {
+	if (cmdName == "PASS") {
+		if (cmdParams[0] == _password)
+			client.setPass();
+		else
+			client.send("ERROR :Password incorrect\r\n");
+		}
+	
+	else if (cmdName == "NICK") {
+		if (!cmdParams[0].empty())
+			client.setNick(cmdParams[0]);
+	}
+	else if (cmdName == "USER") {
+		if (!cmdParams[0].empty()) {
+			client.setUser(cmdParams[0]);
+			client.setReal(cmdParams[3]);
+		}
+	}
+}
+
 void    Server::commandExecute(Client &client, std::string full_cmd)
 {
-	std::istringstream iss(full_cmd);
 	std::string cmdName;
-	std::string cmdParam;
-	iss >> cmdName;
-	iss >> cmdParam;
+	std::vector<std::string> cmdParams;
+	Parser parser;
+	parser.splitIrcLine(full_cmd, cmdName, cmdParams);
+
 	if (cmdName == "CAP" || cmdName == "WHO")
 			return ;
 	if (client.isRegistered() == false) {
-		if (isRegistrationCmd(cmdName) == false) {
+		if (isRegistrationCmd(cmdName) == false) 
 			std::cout << "Not registered missing params" << std::endl;
-		}
-		else {
-			if (cmdName == "PASS") {
-				if (cmdParam == _password)
-					client.setPass();
-				else
-					client.send("ERROR :Password incorrect\r\n");	
-			}
-	
-			else if (cmdName == "NICK") {
-				if (!cmdParam.empty())
-					client.setNick(cmdParam);
-				// else
-					// 	client.check_and_change_Nick();
-			}
-			else if (cmdName == "USER") {
-				if (!cmdParam.empty())
-					client.setUser(cmdParam);
-				// else
-					// 	client.changeUser(cmdParam);
-			}
-			client.setRegistered();
-		}
+		startRegistration(client, cmdName, cmdParams);
+		client.setRegistered();
 	}
+
+	//DELETE
+	std::cout << "Nick: " << client.getNick() << std::endl;
+	std::cout << "User: " << client.getUser() << std::endl;
+	std::cout << "Real: " << client.getReal() << std::endl;
+	//until here
+
+	// if (client.isRegistered() == false)
+	// 	removeClient(client.getFd());
 	
-	else {
-		std::cout << "I am registered, other commands" << std::endl;
-	}
+	// else {
+	// 	std::cout << "I am registered, other commands" << std::endl;
+	// }
 	
 }
 
