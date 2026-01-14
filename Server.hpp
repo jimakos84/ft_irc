@@ -18,6 +18,8 @@ private:
     void    receiveFromClient(int fd);
     void    removeClient(int fd);
     // void    sendToClient(int fd, const std::string& message);
+    // void    handleClientComm(int client_fd);
+    // void    receiveFromClient(Client &client, int client_fd);
 
     int                     _port;
     std::string             _password;
@@ -25,6 +27,7 @@ private:
 
     std::vector<pollfd>     _pollFds;
     std::map<int, Client>   _clients;
+
 public:
     Server(int  port, const std::string& password);
     ~Server();

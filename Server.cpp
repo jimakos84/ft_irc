@@ -81,7 +81,10 @@ void Server::run()
 				if (_pollFds[i].fd == _listenFd)
 					acceptClient();
 				else
+				{
 					receiveFromClient(_pollFds[i].fd);
+					// handleClientComm(_pollFds[i].fd);
+				}
 			}
 		}
 	}
@@ -116,6 +119,16 @@ void    Server::acceptClient()
 	std::cout << "Client connected: fd=" << clientFd << std::endl;
 }
 
+// void    Server::handleClientComm(int client_fd) {
+// 	Client& client = _clients.at(client_fd);
+// 	receiveFromClient(client, client_fd);
+// 	if (client.isRegistered() == false) {
+// 		std::cout << "not registered" << std::endl;
+// 		// removeClient(client_fd);
+// 	}
+// }
+
+// void    Server::receiveFromClient(Client &client, int fd)
 void    Server::receiveFromClient(int fd)
 {
 	std::string buffer;
@@ -142,8 +155,7 @@ void    Server::receiveFromClient(int fd)
 		commandExecute(client, msg);
 	}
 	if (client.isRegistered() == false)
-		removeClient(client.getFd());
-
+		std::cout << "not registered" << std::endl;
 }
 
 
@@ -162,9 +174,12 @@ void	Server::startRegistration(Client &client, std::string cmdName, std::vector<
 	if (cmdName == "PASS") {
 		if (cmdParams[0] == _password)
 			client.setPass();
-		else
+		else {
 			client.send("ERROR :Password incorrect\r\n");
+			removeClient(client.getFd());
+       		return;
 		}
+	}
 	
 	else if (cmdName == "NICK") {
 		if (!cmdParams[0].empty())
@@ -192,6 +207,8 @@ void    Server::commandExecute(Client &client, std::string full_cmd)
 			std::cout << "Not registered missing params" << std::endl;
 		startRegistration(client, cmdName, cmdParams);
 		client.setRegistered();
+		if (client.isRegistered())
+			std::cout << "successful register" << std::endl;
 	}
 
 	//DELETE
