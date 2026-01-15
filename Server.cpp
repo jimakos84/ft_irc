@@ -299,3 +299,8 @@ void    Server::removeClient(int fd)
 std::string Server::getServerName() const {
 	return (_serverName);
 }
+
+void Server::sendErrorMsg(Client &client, std::string err_code, const std::string err_msg) {
+	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " :" + err_msg + "\r\n";
+	client.send(error_msg);
+}

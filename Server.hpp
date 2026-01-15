@@ -50,4 +50,7 @@ public:
 
     //get functions
     std::string getServerName() const;
+
+    //error
+    void sendErrorMsg(Client &client, std::string err_code, const std::string err_msg);
 };
