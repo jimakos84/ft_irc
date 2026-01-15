@@ -21,7 +21,7 @@ class Server
 private:
     void    acceptClient();
     void    receiveFromClient(int fd);
-    void    removeClient(int fd);
+    // void    removeClient(int fd);
     // void    sendToClient(int fd, const std::string& message);
     // void    handleClientComm(int client_fd);
     // void    receiveFromClient(Client &client, int client_fd);
@@ -47,9 +47,12 @@ public:
     bool    startRegistration(Client &client,
                        const std::string &cmdName,
                        const std::vector<std::string> &cmdParams);
+     void    removeClient(int fd);
 
     //get functions
     std::string getServerName() const;
+    std::string getPass() const;
+    std::map<int, Client> getClientList() const;
 
     //error
     void sendErrorMsg(Client &client, std::string err_code, const std::string err_msg);

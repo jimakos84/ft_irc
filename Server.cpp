@@ -3,10 +3,6 @@
 #include "Parser.hpp"
 #include <fcntl.h>
 
-//command includes will be changed later
-// #include "./Commands/ParentCommand.hpp"
-// #include "CmdCenter.hpp"
-
 static volatile sig_atomic_t    g_running = 1;
 
 static void handleSignal(int signum)
@@ -94,7 +90,6 @@ void Server::run()
 				else
 				{
 					receiveFromClient(_pollFds[i].fd);
-					// handleClientComm(_pollFds[i].fd);
 				}
 			}
 		}
@@ -130,16 +125,6 @@ void    Server::acceptClient()
 	std::cout << "Client connected: fd=" << clientFd << std::endl;
 }
 
-// void    Server::handleClientComm(int client_fd) {
-// 	Client& client = _clients.at(client_fd);
-// 	receiveFromClient(client, client_fd);
-// 	if (client.isRegistered() == false) {
-// 		std::cout << "not registered" << std::endl;
-// 		// removeClient(client_fd);
-// 	}
-// }
-
-// void    Server::receiveFromClient(Client &client, int fd)
 void    Server::receiveFromClient(int fd)
 {
 	std::string buffer;
@@ -171,66 +156,16 @@ void    Server::receiveFromClient(int fd)
 		if (!commandExecute(client, msg))
 			break;
 	}
-	//if (client.isRegistered() == false)
-	//	std::cout << "not registered" << std::endl;
 }
 
 
-
-bool    Server::isRegistrationCmd(const std::string &cmdName)
-{
-	std::string possibleCmd[] = {"PASS", "NICK", "USER"};
-	for (unsigned long i = 0; i < 3; i++) {
-		if (cmdName == possibleCmd[i])
-			return (true);
-	}
-	return (false);
-}
-
-bool Server::startRegistration(Client &client,
-                               const std::string &cmdName,
-                               const std::vector<std::string> &cmdParams)
-{
-    if (cmdName == "PASS")
-    {
-        if (cmdParams.size() >= 1 && cmdParams[0] == _password)
-            client.setPass();
-        else
-        {
-            client.send("ERROR :Password incorrect\r\n");
-            removeClient(client.getFd());
-            return false;
-        }
-    }
-    else if (cmdName == "NICK")
-    {
-        if (cmdParams.size() >= 1 && !cmdParams[0].empty())
-            client.setNick(cmdParams[0]);
-        else
-            client.send("ERROR :Need more parameters\r\n");
-    }
-    else if (cmdName == "USER")
-    {
-        if (cmdParams.size() >= 1 && !cmdParams[0].empty())
-        {
-            client.setUser(cmdParams[0]);
-            if (cmdParams.size() >= 4 && !cmdParams[3].empty())
-                client.setReal(cmdParams[3]);
-        }
-        else
-            client.send("ERROR :Need more parameters\r\n");
-    }
-    return true;
-}
-
-void Server::sendWelcomeMsg(Client &client) {
-	std::string client_nick = client.getNick();
-	// std::string server_name = _serverName;
-	client.send(":" + std::string("ft_irc.sadCats.fi ") + RPL_WELCOME + " " + client_nick + " :Welcome to the Internet Relay Network " + client_nick + "\r\n");
-	client.send(":" + std::string("ft_irc.sadCats.fi ") + RPL_YOURHOST + " " + client_nick + " :Your host is ft_irc.sadCats.fi\r\n");
-	client.send(":" + std::string("ft_irc.sadCats.fi ") + RPL_CREATED + " " + client_nick + " :This server was created today\r\n");
-
-}
+// void Server::sendWelcomeMsg(Client &client) {
+// 	std::string client_nick = client.getNick();
+// 	std::string server_name = _serverName;
+// 	client.send(":" + server_name + RPL_WELCOME + " " + client_nick + " :Welcome to the Internet Relay Network " + client_nick + "\r\n");
+// 	client.send(":" + std::string("ft_irc.sadCats.fi ") + RPL_YOURHOST + " " + client_nick + " :Your host is ft_irc.sadCats.fi\r\n");
+// 	client.send(":" + std::string("ft_irc.sadCats.fi ") + RPL_CREATED + " " + client_nick + " :This server was created today\r\n");
+// }
 
 bool Server::commandExecute(Client &client, std::string full_cmd)
 {
@@ -241,34 +176,14 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
 
     if (cmdName.empty())
         return true;
-
     if (cmdName == "CAP" || cmdName == "WHO")
         return true;
 
-    if (!client.isRegistered())
-    {
-        if (!isRegistrationCmd(cmdName))
-        {
-            client.send("ERROR :You have not registered\r\n"); // later: numeric 451
-            return true; // keep connection open
-        }
-
-        if (!startRegistration(client, cmdName, cmdParams))
-            return false; // startRegistration removed the client
-
-        client.setRegistered();
-
-        if (client.isRegistered())
-            sendWelcomeMsg(client);
-
-        return true; // IMPORTANT: do not fall through to "registered" logic
-    }
-
-    // Only registered users reach here
-    std::cout << "I am registered, other commands" << std::endl;
-	ParentCommand* cmd = _commandList.getCmd(cmdName);
+    ParentCommand* cmd = _commandList.getCmd(cmdName);
 	if (!cmd)
-		return (client.send("Unknown cmd"), false) ;
+		return (sendErrorMsg(client, ERR_UNKNOWNCOMMAND, "Unknown command : " + cmdName), false);
+	if (cmd->cmdNeedsRegistration() == true && client.isRegistered() == false)
+		return (sendErrorMsg(client, ERR_NOTREGISTERED, "You have not registered"), false);	
 	cmd->executeCmd(this, client, cmdParams);
     return true;
 }
@@ -291,16 +206,19 @@ void    Server::removeClient(int fd)
 	std::cout << "Client disconnected: fd=" << fd << std::endl;
 }
 
-// void    Server::sendToClient(int fd, const std::string& message) {
-//     if (send(fd, (const void*)message.c_str(), message.length(), MSG_NOSIGNAL) == -1)
-//         std::
-// }
+void Server::sendErrorMsg(Client &client, std::string err_code, const std::string err_msg) {
+	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " :" + err_msg + "\r\n";
+	client.sendMsg(error_msg);
+}
 
 std::string Server::getServerName() const {
 	return (_serverName);
 }
 
-void Server::sendErrorMsg(Client &client, std::string err_code, const std::string err_msg) {
-	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " :" + err_msg + "\r\n";
-	client.send(error_msg);
+std::string Server::getPass() const {
+	return (_password);
+}
+
+std::map<int, Client> Server::getClientList() const {
+	return (_clients);
 }
