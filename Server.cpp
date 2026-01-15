@@ -80,7 +80,14 @@ void Server::run()
 
 		for (size_t i = _pollFds.size(); i-- > 0; )
 		{
-			if (_pollFds[i].revents & POLLIN)
+			short rev = _pollFds[i].revents;
+			if (rev & (POLLHUP | POLLERR | POLLNVAL | POLLRDHUP))
+			{
+				if (_pollFds[i].fd != _listenFd)
+					removeClient(_pollFds[i].fd);
+				continue;
+			}
+			if (rev & POLLIN)
 			{
 				if (_pollFds[i].fd == _listenFd)
 					acceptClient();
