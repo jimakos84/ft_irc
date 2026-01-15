@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include "utils.hpp"
 #include <iostream>
 #include <sys/socket.h>  // for send()
