@@ -139,14 +139,19 @@ void    Server::receiveFromClient(int fd)
 	buffer.resize(512);
 	ssize_t bytes = recv(fd, &buffer[0], buffer.size(), 0);
 
-	if (bytes <= 0)
+	if (bytes < 0)
+	{
+		if (errno == EAGAIN || errno == EWOULDBLOCK)
+			return;
+		removeClient(fd);
+		return;
+	}
+	if (bytes == 0)
 	{
 		removeClient(fd);
 		return;
 	}
-
 	buffer.resize(bytes);
-
 	std::cout << "Buffer: " << buffer << std::endl;
 
 	Client& client = _clients.at(fd);
