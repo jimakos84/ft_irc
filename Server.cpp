@@ -186,28 +186,40 @@ bool    Server::isRegistrationCmd(const std::string &cmdName)
 	return (false);
 }
 
-void	Server::startRegistration(Client &client, std::string cmdName, std::vector<std::string> cmdParams) {
-	if (cmdName == "PASS") {
-		if (cmdParams.size() > 0 && cmdParams[0] == _password)
-			client.setPass();
-		else {
-			client.send("ERROR :Password incorrect\r\n");
-			removeClient(client.getFd());
-       		return;
-		}
-	}
-	
-	else if (cmdName == "NICK") {
-		if (!cmdParams[0].empty())
-			client.setNick(cmdParams[0]);
-	}
-	else if (cmdName == "USER") {
-		if (cmdParams.size() > 0 && !cmdParams[0].empty()) {
-			client.setUser(cmdParams[0]);
-			if (cmdParams.size() > 3 && !cmdParams[3].empty())
-				client.setReal(cmdParams[3]);
-		}
-	}
+bool Server::startRegistration(Client &client,
+                               const std::string &cmdName,
+                               const std::vector<std::string> &cmdParams)
+{
+    if (cmdName == "PASS")
+    {
+        if (cmdParams.size() >= 1 && cmdParams[0] == _password)
+            client.setPass();
+        else
+        {
+            client.send("ERROR :Password incorrect\r\n");
+            removeClient(client.getFd());
+            return false;
+        }
+    }
+    else if (cmdName == "NICK")
+    {
+        if (cmdParams.size() >= 1 && !cmdParams[0].empty())
+            client.setNick(cmdParams[0]);
+        else
+            client.send("ERROR :Need more parameters\r\n");
+    }
+    else if (cmdName == "USER")
+    {
+        if (cmdParams.size() >= 1 && !cmdParams[0].empty())
+        {
+            client.setUser(cmdParams[0]);
+            if (cmdParams.size() >= 4 && !cmdParams[3].empty())
+                client.setReal(cmdParams[3]);
+        }
+        else
+            client.send("ERROR :Need more parameters\r\n");
+    }
+    return true;
 }
 
 void Server::sendWelcomeMsg(Client &client) {
@@ -218,41 +230,38 @@ void Server::sendWelcomeMsg(Client &client) {
 
 }
 
-void    Server::commandExecute(Client &client, std::string full_cmd)
+void Server::commandExecute(Client &client, std::string full_cmd)
 {
-	std::string cmdName;
-	std::vector<std::string> cmdParams;
-	Parser parser;
-	parser.splitIrcLine(full_cmd, cmdName, cmdParams);
+    std::string cmdName;
+    std::vector<std::string> cmdParams;
+    Parser parser;
+    parser.splitIrcLine(full_cmd, cmdName, cmdParams);
 
-	if (cmdName == "CAP" || cmdName == "WHO")
-			return ;
-	if (client.isRegistered() == false) {
-		if (isRegistrationCmd(cmdName) == false) 
-			std::cout << "Not registered missing params" << std::endl;
-		startRegistration(client, cmdName, cmdParams);
-		client.setRegistered();
-		if (client.isRegistered()) {
-			std::cout << "successful register" << std::endl;
-			sendWelcomeMsg(client);
-		}
-	}
+    if (cmdName == "CAP" || cmdName == "WHO")
+        return;
 
-	//DELETE
-	std::cout << "Nick: " << client.getNick() << std::endl;
-	std::cout << "User: " << client.getUser() << std::endl;
-	std::cout << "Real: " << client.getReal() << std::endl;
-	//until here
+    if (!client.isRegistered())
+    {
+        if (!isRegistrationCmd(cmdName))
+        {
+            std::cout << "Not registered missing params" << std::endl;
+            return;
+        }
 
-	// if (client.isRegistered() == false)
-	// 	removeClient(client.getFd());
-	
-	if (client.isRegistered())  {	//this can be changed to else later
-	 	std::cout << "I am registered, other commands" << std::endl;
-		// TestCmd test_cmd;
-		// test_cmd.cmdEx();
-	}
-	
+        if (!startRegistration(client, cmdName, cmdParams))
+            return; // client is deleted, do not touch it
+
+        client.setRegistered();
+
+        if (client.isRegistered())
+        {
+            sendWelcomeMsg(client);
+        }
+        return;
+    }
+
+    // Registered users: handle other commands here
+    std::cout << "I am registered, other commands" << std::endl;
 }
 
 void    Server::removeClient(int fd)
