@@ -2,10 +2,15 @@
 #pragma once
 
 #include <string>
+#include <sstream>
+#include <vector>
 
-class Client;
 
 class Parser {
 public:
-    static void handle(Client& client, const std::string& line);
+	Parser();
+	~Parser();
+
+	void splitIrcLine(const std::string& line, std::string& cmd,
+						 std::vector<std::string>& params);
 };
