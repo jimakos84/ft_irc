@@ -8,7 +8,10 @@ SRC = main.cpp \
        error_handling.cpp \
        Server.cpp \
        Parser.cpp \
-       Client.cpp
+       Client.cpp \
+       CmdCenter.cpp \
+       ./Commands/ParentCommand.cpp \
+       ./Commands/Pong.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

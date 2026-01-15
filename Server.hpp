@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -11,6 +13,8 @@
 #include "Client.hpp"
 #include "utils.hpp"
 #include "MacrosDefinitions.hpp"
+#include "CmdCenter.hpp"
+
 
 class Server
 {
@@ -23,12 +27,14 @@ private:
     // void    receiveFromClient(Client &client, int client_fd);
     void sendWelcomeMsg(Client &client);
 
+    std::string             _serverName;
     int                     _port;
     std::string             _password;
     int                     _listenFd;
 
     std::vector<pollfd>     _pollFds;
     std::map<int, Client>   _clients;
+    CmdCenter               _commandList;
 
 public:
     Server(int  port, const std::string& password);
@@ -36,9 +42,12 @@ public:
 
     void    start();
     void    run();
-    void    commandExecute(Client &client, std::string cmd);
+    bool    commandExecute(Client &client, std::string cmd);
     bool    isRegistrationCmd(const std::string &cmdName);
-bool startRegistration(Client &client,
+    bool    startRegistration(Client &client,
                        const std::string &cmdName,
                        const std::vector<std::string> &cmdParams);
+
+    //get functions
+    std::string getServerName() const;
 };
