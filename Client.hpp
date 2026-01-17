@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include <iostream>
 #include <sys/socket.h>  // for send()
+#include "MacrosDefinitions.hpp"
 
 class Client {
 	private:
@@ -39,6 +40,7 @@ class Client {
 		void setUser(const std::string &user);
 		void setReal(const std::string &real);
 		void setRegistered();
+		void sendWelcomeMsg();
 
 		//Get functions
 		int getFd() const;
@@ -47,6 +49,6 @@ class Client {
 		std::string getUser() const;
 
 		//message formatting for the server reply
-		void send(const std::string &msg);
+		void sendMsg(const std::string &msg);
 
 };

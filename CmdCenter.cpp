@@ -3,6 +3,9 @@
 
 CmdCenter::CmdCenter() {
 	_commands["PING"] = std::make_unique<Pong>();
+	_commands["PASS"] = std::make_unique<Pass>();
+	_commands["NICK"] = std::make_unique<Nick>();
+	_commands["USER"] = std::make_unique<User>();
 }
 
 CmdCenter::~CmdCenter() {}

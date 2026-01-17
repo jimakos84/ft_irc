@@ -32,7 +32,7 @@ bool Client::isRegistered() const {
 void Client::setRegistered() {
 	if (_hasPass && _hasNick && _hasUser) {
 		this->_isRegistered = true;
-		// send();
+		sendWelcomeMsg();
 		std::cout << "registered" << std::endl;
 	}
 }
@@ -76,12 +76,16 @@ std::string Client::getReal() const {
 }
 
 
-void Client::send(const std::string &msg) {
+void Client::sendMsg(const std::string &msg) {
 	ssize_t bytes_sent = ::send(this->_fd, msg.c_str(), msg.size(), 0);
 	 if (bytes_sent == -1) {
 	 	print_err("Send failed", ""), void(0);
 	 }
-
-	//std::cout << "Client: " << _username << " :: " << msg << std::endl;
 }
 
+void Client::sendWelcomeMsg() {
+	std::string client_nick = _nickname;
+	sendMsg(":" + std::string("ft_irc.sadCats.fi ") + RPL_WELCOME + " " + client_nick + " :Welcome to the Internet Relay Network " + client_nick + "\r\n");
+	sendMsg(":" + std::string("ft_irc.sadCats.fi ") + RPL_YOURHOST + " " + client_nick + " :Your host is ft_irc.sadCats.fi\r\n");
+	sendMsg(":" + std::string("ft_irc.sadCats.fi ") + RPL_CREATED + " " + client_nick + " :This server was created today\r\n");
+}

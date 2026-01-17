@@ -6,6 +6,9 @@
 #include <memory>
 #include "./Commands/ParentCommand.hpp"
 #include "./Commands/Pong.hpp"
+#include "./Commands/Pass.hpp"
+#include "./Commands/Nick.hpp"
+#include "./Commands/User.hpp"
 
 class CmdCenter {
     private:

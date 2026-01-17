@@ -9,3 +9,7 @@
 //ERROR codes definition
 #define ERR_NEEDMOREPARAMS  "461"
 #define ERR_NOSUCHSERVER    "402" 
+#define ERR_UNKNOWNCOMMAND  "421"
+#define ERR_NICKNAMEINUSE   "433"
+#define ERR_NOTREGISTERED   "451"
+#define ERR_PASSWDMISMATCH  "464"
