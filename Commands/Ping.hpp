@@ -5,10 +5,10 @@
 #include "ParentCommand.hpp"
 
 
-class Pong : public ParentCommand {
+class Ping : public ParentCommand {
     public:
-        Pong();
-        ~Pong(); 
+        Ping();
+        ~Ping();
         bool cmdNeedsRegistration() const override;
         void executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) override;
 };

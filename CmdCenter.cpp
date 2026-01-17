@@ -2,10 +2,11 @@
 #include "CmdCenter.hpp"
 
 CmdCenter::CmdCenter() {
-	_commands["PING"] = std::make_unique<Pong>();
+	_commands["PING"] = std::make_unique<Ping>();
 	_commands["PASS"] = std::make_unique<Pass>();
 	_commands["NICK"] = std::make_unique<Nick>();
 	_commands["USER"] = std::make_unique<User>();
+	_commands["MODE"] = std::make_unique<Mode>();
 }
 
 CmdCenter::~CmdCenter() {}

@@ -10,6 +10,7 @@
 #include <map>
 #include <poll.h>
 #include <csignal>
+#include <bits/stdc++.h>
 #include "Client.hpp"
 #include "utils.hpp"
 #include "MacrosDefinitions.hpp"
@@ -43,10 +44,6 @@ public:
     void    start();
     void    run();
     bool    commandExecute(Client &client, std::string cmd);
-    bool    isRegistrationCmd(const std::string &cmdName);
-    bool    startRegistration(Client &client,
-                       const std::string &cmdName,
-                       const std::vector<std::string> &cmdParams);
      void    removeClient(int fd);
 
     //get functions

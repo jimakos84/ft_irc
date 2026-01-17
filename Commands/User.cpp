@@ -14,7 +14,7 @@ bool User::cmdNeedsRegistration() const {
 
 void User::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0 || cmdParams.size() < 4) {
-        server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed");
+        server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for User");
         return;
     }
     //probably needs some other checks but simple for now

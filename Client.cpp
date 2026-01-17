@@ -33,7 +33,7 @@ void Client::setRegistered() {
 	if (_hasPass && _hasNick && _hasUser) {
 		this->_isRegistered = true;
 		sendWelcomeMsg();
-		std::cout << "registered" << std::endl;
+		std::cout << "registered" << std::endl; //delete
 	}
 }
 

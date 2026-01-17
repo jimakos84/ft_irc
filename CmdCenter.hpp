@@ -5,10 +5,11 @@
 #include <map>
 #include <memory>
 #include "./Commands/ParentCommand.hpp"
-#include "./Commands/Pong.hpp"
+#include "./Commands/Ping.hpp"
 #include "./Commands/Pass.hpp"
 #include "./Commands/Nick.hpp"
 #include "./Commands/User.hpp"
+#include "./Commands/Mode.hpp"
 
 class CmdCenter {
     private:
