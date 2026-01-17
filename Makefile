@@ -6,7 +6,7 @@ CFLAGS = -Wall -Wextra -Werror -std=c++17 -g
 GREEN = \033[0;32m
 RESET = \033[0m
 
-.SILENT:
+# .SILENT:
 
 SRC = main.cpp \
 	input_validation.cpp \
