@@ -46,7 +46,7 @@ void    Server::start()
 		throw std::runtime_error("bind() failed");
 	if (listen(_listenFd, SOMAXCONN) < 0)
 		throw std::runtime_error("listen () failed");
-	
+
 	setNonBlocking(_listenFd);
 
 	pollfd pfd;
@@ -158,15 +158,6 @@ void    Server::receiveFromClient(int fd)
 	}
 }
 
-
-// void Server::sendWelcomeMsg(Client &client) {
-// 	std::string client_nick = client.getNick();
-// 	std::string server_name = _serverName;
-// 	client.send(":" + server_name + RPL_WELCOME + " " + client_nick + " :Welcome to the Internet Relay Network " + client_nick + "\r\n");
-// 	client.send(":" + std::string("ft_irc.sadCats.fi ") + RPL_YOURHOST + " " + client_nick + " :Your host is ft_irc.sadCats.fi\r\n");
-// 	client.send(":" + std::string("ft_irc.sadCats.fi ") + RPL_CREATED + " " + client_nick + " :This server was created today\r\n");
-// }
-
 bool Server::commandExecute(Client &client, std::string full_cmd)
 {
     std::string cmdName;
@@ -174,16 +165,21 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
     Parser parser;
     parser.splitIrcLine(full_cmd, cmdName, cmdParams);
 
-    if (cmdName.empty())
-        return true;
-    if (cmdName == "CAP" || cmdName == "WHO")
+    if (cmdName.empty()) {
+        return true; }
+
+	std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
+
+	if (cmdName == "CAP" || cmdName == "WHO")
         return true;
 
     ParentCommand* cmd = _commandList.getCmd(cmdName);
 	if (!cmd)
-		return (sendErrorMsg(client, ERR_UNKNOWNCOMMAND, "Unknown command : " + cmdName), false);
+		return (sendErrorMsg(client, ERR_UNKNOWNCOMMAND, "Unknown command : " + cmdName), true);
 	if (cmd->cmdNeedsRegistration() == true && client.isRegistered() == false)
-		return (sendErrorMsg(client, ERR_NOTREGISTERED, "You have not registered"), false);	
+		return (sendErrorMsg(client, ERR_NOTREGISTERED, "You have not registered"), removeClient(client.getFd()), false);
+	if (cmd->isPassSet(client) == false && cmdName != "PASS")
+		return (sendErrorMsg(client, ERR_NOTREGISTERED, "Password required first for registration"), removeClient(client.getFd()), false);
 	cmd->executeCmd(this, client, cmdParams);
     return true;
 }

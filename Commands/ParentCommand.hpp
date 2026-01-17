@@ -14,5 +14,6 @@ class ParentCommand {
         virtual ~ParentCommand();
 
         virtual bool cmdNeedsRegistration() const = 0;
+        virtual bool isPassSet(Client &client) const;
         virtual void executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) = 0;
 };

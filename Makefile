@@ -6,7 +6,7 @@ CFLAGS = -Wall -Wextra -Werror -std=c++17 -g
 GREEN = \033[0;32m
 RESET = \033[0m
 
-# .SILENT:
+.SILENT:
 
 SRC = main.cpp \
 	input_validation.cpp \
@@ -16,10 +16,11 @@ SRC = main.cpp \
 	Client.cpp \
 	CmdCenter.cpp \
 	./Commands/ParentCommand.cpp \
-	./Commands/Pong.cpp \
+	./Commands/Ping.cpp \
 	./Commands/Pass.cpp \
 	./Commands/Nick.cpp \
-	./Commands/User.cpp
+	./Commands/User.cpp \
+	./Commands/Mode.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
