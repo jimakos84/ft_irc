@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include <iostream>
 #include <sys/socket.h>  // for send()
+#include <set>
 #include "MacrosDefinitions.hpp"
 
 class Client {
@@ -13,19 +14,19 @@ class Client {
 		std::string _nickname;
 		std::string _realname;
 		std::string _username;
-		
-		// std::set<std::string> _joined_channels;
+
+		std::set<std::string> _joined_channels;	//implement
 		std::string _buffer;
 		bool _isRegistered;
-		// bool _isOperator;
+		// bool _isOperator; //implement
 		bool _hasPass;
 		bool _hasNick;
 		bool _hasUser;
-		
-		
+
+
 
 	public:
-		Client(int fd);
+		Client(int fd, std::string host);
 
 		void appendtoClientBuffer(std::string incoming_data);
 		bool completeMessageExists();
@@ -43,12 +44,15 @@ class Client {
 		void sendWelcomeMsg();
 
 		//Get functions
-		int getFd() const;
+		int 		getFd() const;
 		std::string getNick() const;
 		std::string getReal() const;
 		std::string getUser() const;
+		std::string	getClientFullIdentifier() const;
+
 
 		//message formatting for the server reply
 		void sendMsg(const std::string &msg);
+		void addJoinedChannel(std::string channel_joined);
 
 };
