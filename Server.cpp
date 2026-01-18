@@ -120,7 +120,10 @@ void    Server::acceptClient()
 	pfd.revents = 0;
 
 	_pollFds.push_back(pfd);
-	_clients.insert(std::make_pair(clientFd, Client(clientFd)));
+	char ip_str[INET_ADDRSTRLEN];
+	inet_ntop(AF_INET, &addr.sin_addr, ip_str, sizeof(ip_str));
+    std::string client_ip(ip_str);
+	_clients.insert(std::make_pair(clientFd, Client(clientFd, client_ip)));
 
 	std::cout << "Client connected: fd=" << clientFd << std::endl;
 }
@@ -202,6 +205,11 @@ void    Server::removeClient(int fd)
 	std::cout << "Client disconnected: fd=" << fd << std::endl;
 }
 
+void Server::sendReplyMsg(Client &client, std::string RPL_code, const std::string msg) {
+	std::string reply_msg = ":" + _serverName + " " + RPL_code + msg + "\r\n";
+	client.sendMsg(reply_msg);
+}
+
 void Server::sendErrorMsg(Client &client, std::string err_code, const std::string err_msg) {
 	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " :" + err_msg + "\r\n";
 	client.sendMsg(error_msg);
@@ -218,3 +226,12 @@ std::string Server::getPass() const {
 std::map<int, Client> Server::getClientList() const {
 	return (_clients);
 }
+
+std::map<std::string, Channel> Server::getChannelList() const {
+	return (_channels);
+}
+
+void Server::addNewChannel(std::string channel_Name) {
+	_channels.emplace(channel_Name, channel_Name);
+}
+

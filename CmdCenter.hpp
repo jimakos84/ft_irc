@@ -10,6 +10,7 @@
 #include "./Commands/Nick.hpp"
 #include "./Commands/User.hpp"
 #include "./Commands/Mode.hpp"
+#include "./Commands/Join.hpp"
 
 class CmdCenter {
     private:

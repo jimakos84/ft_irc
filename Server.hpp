@@ -11,10 +11,12 @@
 #include <poll.h>
 #include <csignal>
 #include <bits/stdc++.h>
+#include <arpa/inet.h>
 #include "Client.hpp"
 #include "utils.hpp"
 #include "MacrosDefinitions.hpp"
 #include "CmdCenter.hpp"
+#include "Channel.hpp"
 
 
 class Server
@@ -22,11 +24,6 @@ class Server
 private:
     void    acceptClient();
     void    receiveFromClient(int fd);
-    // void    removeClient(int fd);
-    // void    sendToClient(int fd, const std::string& message);
-    // void    handleClientComm(int client_fd);
-    // void    receiveFromClient(Client &client, int client_fd);
-    void sendWelcomeMsg(Client &client);
 
     std::string             _serverName;
     int                     _port;
@@ -35,6 +32,7 @@ private:
 
     std::vector<pollfd>     _pollFds;
     std::map<int, Client>   _clients;
+    std::map<std::string, Channel>   _channels;
     CmdCenter               _commandList;
 
 public:
@@ -50,7 +48,12 @@ public:
     std::string getServerName() const;
     std::string getPass() const;
     std::map<int, Client> getClientList() const;
+    std::map<std::string, Channel> getChannelList() const;
 
-    //error
+    //messagging
     void sendErrorMsg(Client &client, std::string err_code, const std::string err_msg);
+    void sendReplyMsg(Client &client, std::string RPL_code, const std::string msg);
+
+    //Command functions ?
+    void addNewChannel(std::string channel_Name);
 };

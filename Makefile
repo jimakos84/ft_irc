@@ -15,12 +15,14 @@ SRC = main.cpp \
 	Parser.cpp \
 	Client.cpp \
 	CmdCenter.cpp \
+	Channel.cpp \
 	./Commands/ParentCommand.cpp \
 	./Commands/Ping.cpp \
 	./Commands/Pass.cpp \
 	./Commands/Nick.cpp \
 	./Commands/User.cpp \
-	./Commands/Mode.cpp
+	./Commands/Mode.cpp \
+	./Commands/Join.cpp
 
 OBJ = $(SRC:.cpp=.o)
 

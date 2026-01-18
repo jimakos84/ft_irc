@@ -1,7 +1,7 @@
 
 #include "Client.hpp"
 
-Client::Client(int fd) : _fd(fd), _hostname(""), _nickname(""), _realname(""),
+Client::Client(int fd, std::string host) : _fd(fd), _hostname(host), _nickname(""), _realname(""),
 				 _username(""), _buffer(""), _isRegistered(false), _hasPass(false),
 				_hasNick(false), _hasUser(false) {} //add is operator
 
@@ -75,6 +75,10 @@ std::string Client::getReal() const {
 	return (this->_realname);
 }
 
+std::string	Client::getClientFullIdentifier() const {
+	return (_nickname + "!" + _username + "@" + _hostname);
+}
+
 
 void Client::sendMsg(const std::string &msg) {
 	ssize_t bytes_sent = ::send(this->_fd, msg.c_str(), msg.size(), 0);
@@ -88,4 +92,8 @@ void Client::sendWelcomeMsg() {
 	sendMsg(":" + std::string("ft_irc.sadCats.fi ") + RPL_WELCOME + " " + client_nick + " :Welcome to the Internet Relay Network " + client_nick + "\r\n");
 	sendMsg(":" + std::string("ft_irc.sadCats.fi ") + RPL_YOURHOST + " " + client_nick + " :Your host is ft_irc.sadCats.fi\r\n");
 	sendMsg(":" + std::string("ft_irc.sadCats.fi ") + RPL_CREATED + " " + client_nick + " :This server was created today\r\n");
+}
+
+void Client::addJoinedChannel(std::string channel_joined) {
+	_joined_channels.insert(channel_joined);
 }
