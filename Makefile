@@ -22,7 +22,8 @@ SRC = main.cpp \
 	./Commands/Nick.cpp \
 	./Commands/User.cpp \
 	./Commands/Mode.cpp \
-	./Commands/Join.cpp
+	./Commands/Join.cpp \
+	./Commands/Invite.cpp
 
 OBJ = $(SRC:.cpp=.o)
 
