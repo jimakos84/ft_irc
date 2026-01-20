@@ -10,6 +10,7 @@
 #define RPL_INVITING	"341"
 
 //ERROR codes definition
+#define ERR_NOSUCHNICK          "401"
 #define ERR_NOSUCHSERVER		"402"
 #define ERR_UNKNOWNCOMMAND  	"421"
 #define ERR_NICKNAMEINUSE   	"433"
