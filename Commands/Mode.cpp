@@ -18,10 +18,14 @@ void Mode::executeCmd(Server *server, Client &client, const std::vector<std::str
         return;
     }
 
-	//implement
-
-
-
+	if (cmdParams[0][0] == '#')
+    {
+        if (cmdParams.size() == 1)
+        {
+            server->sendReplyMsg(client, "324", cmdParams[0] + " +");
+        }
+        return ;
+    }
 }
 
 

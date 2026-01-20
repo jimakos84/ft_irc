@@ -10,9 +10,10 @@
 #include <map>
 #include <poll.h>
 #include <csignal>
-#include <bits/stdc++.h>
+// #include <bits/stdc++.h>
 #include <arpa/inet.h>
 #include "Client.hpp"
+#include "Parser.hpp"
 #include "utils.hpp"
 #include "MacrosDefinitions.hpp"
 #include "CmdCenter.hpp"
@@ -47,12 +48,16 @@ public:
     //get functions
     std::string getServerName() const;
     std::string getPass() const;
-    std::map<int, Client> getClientList() const;
-    std::map<std::string, Channel> getChannelList() const;
+    std::map<int, Client>& getClientList();
+    const std::map<int, Client>& getClientList() const;
+
+    std::map<std::string, Channel>& getChannelList();
+    const std::map<std::string, Channel>& getChannelList() const;
+
 
     //messagging
     void sendErrorMsg(Client &client, std::string err_code, const std::string err_msg);
-    void sendReplyMsg(Client &client, std::string RPL_code, const std::string msg);
+    void sendReplyMsg(Client &client, std::string code, const std::string &msg);
 
     //Command functions ?
     void addNewChannel(std::string channel_Name);

@@ -13,6 +13,24 @@ bool Join::cmdNeedsRegistration() const {
     return (true);
 }
 
+std::vector<std::string> splitJoinLine(const std::string &line, char delim) {
+    std::vector<std::string> result;
+    std::string current;
+
+    for (char c : line)
+    {
+        if (c == delim)
+        {
+            result.push_back(current);
+            current.clear();
+        }
+        else   
+            current += c;
+    }
+    result.push_back(current);
+    return result;
+}
+
 bool Join::addClientToChannel(Server *server, Channel &channel, Client &client) {
 	if (channel.getInviteOnly() == true) {
 		if (channel.addInvitedClient(&client, client.getNick()) == ALREADY_MEMBER)
@@ -23,59 +41,59 @@ bool Join::addClientToChannel(Server *server, Channel &channel, Client &client) 
 		return (server->sendErrorMsg(client, ERR_CHANNELISFULL, channel.getChannelName() + " " + " ::Cannot join channel (+l)"), false);
 	}
 
-	//if all successful add and update client & channel members
 	client.addJoinedChannel(channel.getChannelName());
 	channel.addClientToMemberList(&client);
 	channel.removeClientFromInvited(client.getNick());
 	return (true);
 }
 
-void Join::ChannelReplyMsg(Server *server, Client &client, Channel &channel) const {
+void Join::ChannelReplyMsg(Server *server, Client &client, Channel &channel) const
+{
+    std::string Join_msg = ":" + client.getClientFullIdentifier()
+                         + " JOIN " + channel.getChannelName() + "\r\n";
 
-	std::string  Join_msg = ":" + client.getClientFullIdentifier() + " JOIN " + channel.getChannelName() + "\r\n";
+    const std::set<Client*>& members = channel.getMembers();
+    for (Client* member : members)
+        member->sendMsg(Join_msg);
 
-	const std::set<Client*>& members = channel.getMembers();
-	for (Client* member : members)
+    if (channel.getTopic().empty())
+        server->sendReplyMsg(client, RPL_NOTOPIC,
+                             channel.getChannelName() + " :No topic is ASDset");
+    else
+        server->sendReplyMsg(client, RPL_TOPIC,
+                             channel.getChannelName() + " :" + channel.getTopic());
+    std::string names;
+    for (Client* m : members)
     {
-        // send to everyone except the joining client if needed
-        if (member != &client)
-            member->sendMsg(Join_msg);
+        if (!names.empty())
+            names += " ";
+        names += m->getNick();
     }
 
-	if (channel.getTopic() == "")
-		server->sendReplyMsg(client, RPL_NOTOPIC, channel.getChannelName() + " :No topic is set");
-	else
-		server->sendReplyMsg(client, RPL_TOPIC, channel.getChannelName() + " :" + channel.getTopic());
+    server->sendReplyMsg(client, RPL_NAMREPLY,
+                         "= " + channel.getChannelName() + " :" + names);
 
-
+    server->sendReplyMsg(client, RPL_ENDOFNAMES,
+                         channel.getChannelName() + " :End of /NAMES list.");
 }
+
 
 void Join::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0) {
         server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Join");
         return;
     }
+    std::vector<std::string> channels = splitJoinLine(cmdParams[0], ',');
+    for (size_t i = 0; i < channels.size(); ++i) {
+        server->addNewChannel(channels[i]);
 
-	server->addNewChannel(cmdParams[0]);
-
-	std::map<std::string, Channel> channel_list = server->getChannelList();
-	for (auto it = channel_list.begin(); it != channel_list.end(); it++) {
-		std::string curr_channelName = it->first;
-		if (curr_channelName == cmdParams[0]) {
-			if (addClientToChannel(server, it->second, client) == false)
-				return;
-			// if (it->second.getTopic() == "")
-			// 	server->sendReplyMsg(client, RPL_NOTOPIC, it->second.getChannelName() + " :No topic is set");
-			// else
-			// 	server->sendReplyMsg(client, RPL_TOPIC, it->second.getChannelName() + " :" + it->second.getTopic());
-			// if (ret_value == ALREADY_MEMBER)
-			// 	return (server->sendErrorMsg(client, ERR_USERONCHANNEL, client.getNick() + " " + curr_channelName + " " + " :is already on channel"), void(0));
-			// if (ret_value == FULL_CHANNEL)
-			// 	return (server->sendErrorMsg(client, ERR_CHANNELISFULL, curr_channelName + " " + " ::Cannot join channel (+l)"), void(0));
-		}
-	}
-
-	// server->addNewChannel(cmdParams[0]);
-	// addClientToChannel(server, it->second, client);
-	//channel doesnt exist, create and join
+        std::map<std::string, Channel>& channel_list = server->getChannelList();
+        auto it = channel_list.find(channels[i]);
+        if (it == channel_list.end())
+            return;
+        Channel& channel = it->second;
+        if (!addClientToChannel(server, channel, client))
+            return;
+        ChannelReplyMsg(server, client, channel);
+    }
 }
