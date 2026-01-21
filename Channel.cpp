@@ -75,7 +75,7 @@ std::string	Channel::getChannelmode() {
 		channel_modes += "k";
 		mode_params += " " + _channel_key;
 	}
-	if (_userLimit == true) {
+	if (_userLimit != 0) {
 		channel_modes += "l";
 		mode_params += " " + std::to_string(_userLimit);
 	}

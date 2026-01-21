@@ -22,7 +22,25 @@ void Mode::handleUserMode(Server *server, Client &client, const std::vector<std:
 	server->sendErrorMsg(client, ERR_USERSDONTMATCH, ":Cannot change mode for other users");
 }
 
+bool validate_ModeStr(std::string mode_line) {
+	for (char c : mode_line) {
+		if (c != 'i' && c != 't' && c != 'k' && c != 'l' && c != 'o' && c != '+' && c != '-')
+			return (false);
+	}
+	return (true);
+}
+
+void broadcast_mode_msg(Client &client, Channel &channel) {
+	std::string reply = ":" + client.getClientFullIdentifier() + " MODE "
+		+ channel.getChannelName() + " " + channel.getChannelmode() + "\r\n";
+	const std::set<Client*>& members = channel.getMembers();
+	for (Client * inform : members) 
+		inform->sendMsg(reply);
+}
+
 void Mode::processModeParams(Server *server, Client &client, Channel &channel, const std::vector<std::string> &cmdParams) {
+	if (validate_ModeStr(cmdParams[1]) == false)
+		return (server->sendErrorMsg(client, ERR_UNKNOWNMODE , cmdParams[1] + " :is unknown mode char to me for " + channel.getChannelName()), void(0));
 	if (cmdParams[1][1] == 'i') {
 		if (cmdParams[1][0] == '+')
 			channel.setInviteOnly(true);
@@ -37,23 +55,23 @@ void Mode::processModeParams(Server *server, Client &client, Channel &channel, c
 	}
 	else if (cmdParams[1][1] == 'k') {
 		if (cmdParams[1][0] == '+') {
-			if (cmdParams.size() > 1) {
+			if (cmdParams.size() > 2) {
 				if (channel.getHasKey() == true)
-					server->sendErrorMsg(client, ERR_KEYSET, channel.getChannelName() + " :Channel key already set");
+					return (server->sendErrorMsg(client, ERR_KEYSET, channel.getChannelName() + " :Channel key already set"), void(0));
 				channel.setKey(true, cmdParams[2]);
 			}
 			else
-				server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Key Setting");
+				return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Key Setting"), void(0));
 		}
 		else if (cmdParams[1][0] == '-')
 			channel.setKey(false, "");
 	}
 	else if (cmdParams[1][1] == 'l') {
 		if (cmdParams[1][0] == '+') {
-			if (cmdParams.size() > 1)
+			if (cmdParams.size() > 2)
 				channel.setUserLimit(std::stol(cmdParams[2]));
 			else
-				server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Limit Setting");
+				return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Limit Setting"), void(0));
 		}
 		else if (cmdParams[1][0] == '-')
 			channel.setUserLimit(0);
@@ -66,27 +84,26 @@ void Mode::processModeParams(Server *server, Client &client, Channel &channel, c
 				if (channel.isClientMember(&client) == true)
 					channel.addClientToOperatorList(&client);
 				else
-					server->sendErrorMsg(client, ERR_USERNOTINCHANNEL, client.getNick() + " " + cmdParams[0] + " :They aren't on that channel");
+					return (server->sendErrorMsg(client, ERR_USERNOTINCHANNEL, client.getNick() + " " + cmdParams[0] + " :They aren't on that channel"), void(0));
 			}
 			else
-				server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Operator Setting");
+				return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Operator Setting"), void(0));
 		}
 		else if (cmdParams[1][0] == '-')
 			channel.addClientToOperatorList(&client);
 	}
-	else
-		server->sendErrorMsg(client, ERR_NOSUCHCHANNEL , cmdParams[1] + " :is unknown mode char to me for " + channel.getChannelName());
+	broadcast_mode_msg(client, channel);
 }
 
 void Mode::handleChannelMode(Server *server, Client &client, const std::vector<std::string> &cmdParams) {
 	for (auto& [channel_name, channel] : server->getChannelList()) {
-		if (channel_name == cmdParams[0]) {
+		if ("#" + channel_name == cmdParams[0]) {
 			if (cmdParams.size() == 1)
-				return (server->sendReplyMsg(client, RPL_CHANNELMODEIS, cmdParams[0] + channel.getChannelmode()));
+				return (server->sendReplyMsg(client, RPL_CHANNELMODEIS, cmdParams[0] + " +" + channel.getChannelmode()));
 			else {
 				if (channel.isClientOperator(&client) == false && cmdParams[1][1] != 'o')
 					return (server->sendErrorMsg(client, ERR_CHANOPRIVSNEEDED , cmdParams[0] + " :You're not channel operator"), void(0));
-				processModeParams(server, client, channel, cmdParams);
+				return (processModeParams(server, client, channel, cmdParams), void(0));
 			}
 		}
 	}
