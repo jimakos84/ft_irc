@@ -4,6 +4,7 @@
 #include "ParentCommand.hpp"
 
 class Channel;
+class Client;
 
 class Invite : public ParentCommand {
     public:
@@ -14,4 +15,6 @@ class Invite : public ParentCommand {
 
 		bool addClientToChannel(Server *server, Channel &channel, Client &client);
 		void ChannelReplyMsg(Server *server, Client &client, Channel &channel) const;
+        Client* getClientByNick(Server* server, std::string nickName);
+        Channel* getChannelByName(Server *server, std::string& name);
 };

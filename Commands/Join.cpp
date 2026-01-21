@@ -14,6 +14,7 @@ bool Join::cmdNeedsRegistration() const {
 }
 
 bool Join::addClientToChannel(Server *server, Channel &channel, Client &client) {
+	channel.printChannelName(server, client, channel.getChannelName());
 	if (channel.getInviteOnly() == true) {
 		if (channel.addInvitedClient(&client, client.getNick()) == ALREADY_MEMBER)
 			return (server->sendErrorMsg(client, ERR_USERONCHANNEL, client.getNick() + " " + channel.getChannelName() + " " + " :is already on channel"), false);

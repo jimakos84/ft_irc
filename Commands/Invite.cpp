@@ -36,6 +36,7 @@ Channel* Invite::getChannelByName(Server *server, std::string& name)
     }
     return ("");
 }
+
 void Invite::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() <= 1) {
         server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Join");
@@ -43,7 +44,7 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
     }
 
     std::string inviteeName = cmdParams[0];
-    std::string channelName = cmdParams[1];
+    std::string channelName = cmdParams[1];  
     
     Client* invitee = getClientByNick(server, inviteeName);
     if (invitee == "")
@@ -52,9 +53,25 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
         return ;
     }
     Channel* channel = getChannelByName(server, channelName);
-    if (isOnChannel(invitee, channel))
+    if (!channel)
     {
-        server->sendErrorMsg(client, ERR_USERONCHANNEL, inviteeName + channelName + " is already on channel");
+        server->sendErrorMsg(client, ERR_NOTONCHANNEL, channelName + " :No such channel");
+        return ;
     }
+    if (channel)
+    {
+        if (channel->isInviteOnly()) // to implement
+        {
+            if (!client->isOperator()) // to implement
+            {
+                server->sendErrorMsg(client, ERR_CHANOPRIVSNEEDED, channelName + " :You're not channel operator");
+            }
+        }
+        if (channel->addInvitedClient(invitee, inviteeName) == ALREADY_MEMBER)
+        {
+            server->sendErrorMsg(client, ERR_USERONCHANNEL, inviteeName + channelName + " is already on channel");
+        }
+    }
+
 
 }
