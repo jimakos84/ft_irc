@@ -2,14 +2,17 @@
 #pragma once
 
 //IRC Protocol Reply Codes
-#define RPL_WELCOME		"001"
-#define RPL_YOURHOST	"002"
-#define RPL_CREATED		"003"
-#define RPL_NOTOPIC		"331"
-#define RPL_TOPIC		"332"
-#define RPL_INVITING	"341"
+#define RPL_WELCOME			"001"
+#define RPL_YOURHOST		"002"
+#define RPL_CREATED			"003"
+#define RPL_CHANNELMODEIS	"324"
+#define RPL_NOTOPIC			"331"
+#define RPL_TOPIC			"332"
+#define RPL_INVITING		"341"
+#define RPL_NAMREPLY   		"353"
+#define RPL_ENDOFNAMES  	"366"
 
-//ERROR codes definition
+//ERROR codes definition    
 #define ERR_NOSUCHSERVER		"402"
 #define ERR_UNKNOWNCOMMAND  	"421"
 #define ERR_NICKNAMEINUSE   	"433"
