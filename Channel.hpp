@@ -48,7 +48,8 @@ class Channel {
 		void		addClientToMemberList(Client *client);
 		size_t 		getMemberAmount() const;
 		void 		addClientToOperatorList(Client *client);
-		void 		removeClientToOperatorList(Client *client);
-		bool 		isClientOperator(Client *client_name);
-		bool 		isClientMember(Client *client_name);
+		void 		removeClientFromOperatorList(Client *client);
+		bool 		isClientOperator(Client *wanted_client);
+		bool 		isClientMember(Client *wanted_client);
+		Client*		getMemberByNick(std::string wanted_nick);
 };

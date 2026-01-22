@@ -111,22 +111,30 @@ void Channel::addClientToOperatorList(Client *client) {
 	_operators.insert(client);
 }
 
-void Channel::removeClientToOperatorList(Client *client) {
+void Channel::removeClientFromOperatorList(Client *client) {
 	_operators.erase(client);
 }
 
-bool Channel::isClientOperator(Client *client_name) {
-	for (Client * wanted : _operators) {
-		if (wanted == client_name)
+bool Channel::isClientOperator(Client *wanted_client) {
+	for (Client * curr_client : _operators) {
+		if (curr_client == wanted_client)
 			return (true);
 	}
 	return false;
 }
 
-bool Channel::isClientMember(Client *client_name) {
-	for (Client * wanted : _members) {
-		if (wanted == client_name)
+bool Channel::isClientMember(Client *wanted_client) {
+	for (Client * curr_client : _members) {
+		if (curr_client == wanted_client)
 			return (true);
 	}
 	return false;
+}
+
+Client*	Channel::getMemberByNick(std::string wanted_nick) {
+	for (Client * curr_client : _members) {
+		if (curr_client->getNick() == wanted_nick)
+			return (curr_client);
+	}
+	return (nullptr);
 }
