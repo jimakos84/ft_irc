@@ -18,7 +18,7 @@ class Client {
 		std::set<std::string> _joined_channels;	//implement
 		std::string _buffer;
 		bool _isRegistered;
-		// bool _isOperator; //implement
+		bool _isOperator; //implement
 		bool _hasPass;
 		bool _hasNick;
 		bool _hasUser;
@@ -26,6 +26,7 @@ class Client {
 
 
 	public:
+		Client();
 		Client(int fd, std::string host);
 
 		void appendtoClientBuffer(std::string incoming_data);
@@ -33,6 +34,7 @@ class Client {
 		std::string extractMessage();
 
 		bool isRegistered() const;
+		bool isOperator() const;
 		bool hasPass();
 
 		//Registration specific functions

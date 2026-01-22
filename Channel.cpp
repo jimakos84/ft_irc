@@ -45,9 +45,7 @@ const std::set<Client*>& Channel::getMembers() const {
 //check if the channel has a valid name
 bool Channel::isValidChannelName(std::string name)
 {
-	if (name.empty()
-		|| name[0] != '#'
-		|| name.size() > 50)
+	if (name.empty() || name[0] != '#' || name.size() > 50)
 		return (false);
 	for (size_t i = 1; i < name.size(); i++)
 	{
@@ -70,6 +68,17 @@ bool Channel::isExistingChannel(Server* server, std::string& channelName)
 		}
 	}
 	return (false);
+}
+
+//check if the channel is a invite-only channel
+bool Channel::isInviteOnly() const
+{
+	bool value;
+	if (_inviteOnly == true)
+		value = true;
+	else
+		value = false;
+	return (value);
 }
 
 void Channel::printChannelName(Server* server, Client& client, std::string name)

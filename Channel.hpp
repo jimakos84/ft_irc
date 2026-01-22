@@ -46,4 +46,5 @@ class Channel {
 		void		printChannelName(Server* server, Client& client, std::string name);
 		bool 		isValidChannelName(std::string name);
 		bool		isExistingChannel(Server* server, std::string& channelName);
+		bool 		isInviteOnly() const;
 };

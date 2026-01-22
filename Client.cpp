@@ -1,9 +1,10 @@
 
 #include "Client.hpp"
 
+Client::Client() {}
 Client::Client(int fd, std::string host) : _fd(fd), _hostname(host), _nickname(""), _realname(""),
-				 _username(""), _buffer(""), _isRegistered(false), _hasPass(false),
-				_hasNick(false), _hasUser(false) {} //add is operator
+				 _username(""), _buffer(""), _isRegistered(false), _isOperator(false), _hasPass(false),
+				_hasNick(false), _hasUser(false) {}//add is operator
 
 void Client::appendtoClientBuffer(std::string incoming_data) {
 	this->_buffer += incoming_data;
@@ -27,6 +28,10 @@ std::string Client::extractMessage() {
 
 bool Client::isRegistered() const {
 	return (_isRegistered);
+}
+
+bool Client::isOperator() const{
+	return (_isOperator);
 }
 
 void Client::setRegistered() {

@@ -3,6 +3,8 @@
 #include "../Client.hpp"
 #include "../Server.hpp"
 #include "../Channel.hpp"
+#include <cstdint>
+
 
 Invite::Invite() {}
 
@@ -12,19 +14,24 @@ bool Invite::cmdNeedsRegistration() const {
     return (true);
 }
 
-Client* Invite::getClientByNick(Server* server, std::string nickName)
+bool Invite::getClientByNick(Server* server,
+                            const std::string& nickName,
+                            Client& outClient)
 {
-    std::map<std::int, Client> client_list = server->getClientList();
+    auto client_list = server->getClientList();
 
-    for (auto it = client_list.begin(); it != client_list.end(); it++) 
+    for (const auto& [fd, client] : client_list)
     {
-        if (it->second.getNick(nickName))
+        if (client.getNick() == nickName)
         {
-            return (it->second);
+            outClient = client; // copy
+            return true;
         }
     }
-    return ("");
+    return false;
 }
+
+
 
 Channel* Invite::getChannelByName(Server *server, std::string& name)
 {
@@ -34,7 +41,7 @@ Channel* Invite::getChannelByName(Server *server, std::string& name)
     {
         return (&it->second);
     }
-    return ("");
+    return (nullptr);
 }
 
 void Invite::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
@@ -46,8 +53,8 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
     std::string inviteeName = cmdParams[0];
     std::string channelName = cmdParams[1];  
     
-    Client* invitee = getClientByNick(server, inviteeName);
-    if (invitee == "")
+    Client invitee;
+    if (getClientByNick(server, inviteeName, invitee) == false)
     {
         server->sendErrorMsg(client, ERR_NOSUCHNICK, inviteeName + " :No such nick exists!");
         return ;
@@ -60,18 +67,22 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
     }
     if (channel)
     {
-        if (channel->isInviteOnly()) // to implement
+        if (channel->isInviteOnly())
         {
-            if (!client->isOperator()) // to implement
+            if (!client.isOperator()) // to implement
             {
                 server->sendErrorMsg(client, ERR_CHANOPRIVSNEEDED, channelName + " :You're not channel operator");
+                return ;
             }
+            
         }
-        if (channel->addInvitedClient(invitee, inviteeName) == ALREADY_MEMBER)
+        if (channel->addInvitedClient(&invitee, inviteeName) == ALREADY_MEMBER)
         {
             server->sendErrorMsg(client, ERR_USERONCHANNEL, inviteeName + channelName + " is already on channel");
+            return ;
         }
-    }
 
+    }
+    server->sendReplyMsg(client, RPL_INVITING, "You got invitation");
 
 }
