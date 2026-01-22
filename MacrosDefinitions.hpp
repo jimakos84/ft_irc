@@ -19,6 +19,7 @@
 #define ERR_UNKNOWNCOMMAND  	"421"	//"<command> :Unknown command"
 #define ERR_NICKNAMEINUSE   	"433"	//"<nick> :Nickname is already in use"
 #define ERR_USERNOTINCHANNEL	"441"	//"<nick> <channel> :They aren't on that channel"
+#define ERR_NOTONCHANNEL        "442"   //"<channel> :You're not on that channel" (when client tries to performa channel cmd for which they are not member)
 #define ERR_USERONCHANNEL		"443"	//"<user> <channel> :is already on channel"
 #define ERR_NOTREGISTERED   	"451"	//":You have not registered"
 #define ERR_NEEDMOREPARAMS  	"461"	//"<command> :Not enough parameters"

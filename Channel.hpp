@@ -46,6 +46,7 @@ class Channel {
 		int 		addInvitedClient(Client *client, std::string VIP);
 		void 		removeClientFromInvited(std::string NIP);
 		void		addClientToMemberList(Client *client);
+		void		removeClientFromMemberList(Client *client);
 		size_t 		getMemberAmount() const;
 		void 		addClientToOperatorList(Client *client);
 		void 		removeClientFromOperatorList(Client *client);

@@ -107,6 +107,10 @@ void Channel::addClientToMemberList(Client *client) {
 	_members.insert(client);
 }
 
+void Channel::removeClientFromMemberList(Client *client) {
+	_members.erase(client);
+}
+
 void Channel::addClientToOperatorList(Client *client) {
 	_operators.insert(client);
 }

@@ -8,6 +8,7 @@ CmdCenter::CmdCenter() {
 	_commands["USER"] = std::make_unique<User>();
 	_commands["MODE"] = std::make_unique<Mode>();
 	_commands["JOIN"] = std::make_unique<Join>();
+	_commands["KICK"] = std::make_unique<Kick>();
 }
 
 CmdCenter::~CmdCenter() {}
