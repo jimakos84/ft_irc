@@ -1,6 +1,5 @@
 
 #include "Server.hpp"
-#include "Parser.hpp"
 #include <fcntl.h>
 
 static volatile sig_atomic_t    g_running = 1;
@@ -155,7 +154,6 @@ void    Server::receiveFromClient(int fd)
 	while (client.completeMessageExists() == true)
 	{
 		std::string msg = client.extractMessage();
-		// std::cout << "\n\n[PARSED] " << msg << std::endl;
 		if (!commandExecute(client, msg))
 			break;
 	}
@@ -173,7 +171,7 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
 
 	std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
 
-	if (cmdName == "CAP" || cmdName == "WHO")
+	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG")
         return true;
 
     ParentCommand* cmd = _commandList.getCmd(cmdName);
@@ -205,10 +203,13 @@ void    Server::removeClient(int fd)
 	std::cout << "Client disconnected: fd=" << fd << std::endl;
 }
 
-void Server::sendReplyMsg(Client &client, std::string RPL_code, const std::string msg) {
-	std::string reply_msg = ":" + _serverName + " " + RPL_code + msg + "\r\n";
-	client.sendMsg(reply_msg);
+void Server::sendReplyMsg(Client &client, std::string code, const std::string &msg)
+{
+    std::string reply = ":" + _serverName + " " + code + " " + client.getNick()
+                      + " " + msg + "\r\n";
+    client.sendMsg(reply);
 }
+
 
 void Server::sendErrorMsg(Client &client, std::string err_code, const std::string err_msg) {
 	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " :" + err_msg + "\r\n";
@@ -223,13 +224,12 @@ std::string Server::getPass() const {
 	return (_password);
 }
 
-std::map<int, Client> Server::getClientList() const {
-	return (_clients);
-}
+std::map<int, Client>& Server::getClientList() { return _clients; }
+const std::map<int, Client>& Server::getClientList() const { return _clients; }
 
-std::map<std::string, Channel> Server::getChannelList() const {
-	return (_channels);
-}
+std::map<std::string, Channel>& Server::getChannelList() { return _channels; }
+const std::map<std::string, Channel>& Server::getChannelList() const { return _channels; }
+
 
 void Server::addNewChannel(std::string channel_Name) {
 	_channels.emplace(channel_Name, channel_Name);
