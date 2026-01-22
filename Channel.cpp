@@ -5,7 +5,8 @@ Channel::Channel(const std::string given_name) : _name(given_name) {
 	_topic = "";
 	_channel_key = "";
 	_inviteOnly = false;
-	_topicSet = false;
+	_isTopicRestricted = false;
+	_hasKey = false;
 	_userLimit = 0;
 }
 
@@ -15,10 +16,26 @@ std::string Channel::getChannelName() const {
 	return (_name);
 }
 
-//MODE ::
-// bool Channel::setInviteOnly(bool status) {
-// 	_inviteOnly = status;
-// }
+void Channel::setInviteOnly(bool status) {
+	_inviteOnly = status;
+}
+
+void Channel::setTopic(std::string new_topic) {
+	_topic = new_topic;
+}
+
+void Channel::setTopicRestriction(bool status) {
+	_isTopicRestricted = status;
+}
+
+void Channel::setKey(bool status, std::string new_key) {
+	_hasKey = status;
+	_channel_key = new_key;
+}
+
+void Channel::setUserLimit(size_t new_limit) {
+	_userLimit = new_limit;
+}
 
 bool Channel::getInviteOnly() const {
 	return (_inviteOnly);
@@ -36,11 +53,38 @@ std::string Channel::getTopic() const {
 	return(_topic);
 }
 
+bool Channel::getHasKey() const {
+	return(_hasKey);
+}
+
 const std::set<Client*>& Channel::getMembers() const {
 	return (_members);
 }
 
+std::string	Channel::getChannelmode() {
+	std::string channel_modes;
+	std::string mode_params;
 
+	if (_inviteOnly == true)
+		channel_modes += "i";
+	if (_isTopicRestricted == true) {
+		channel_modes += "t";
+		mode_params += _topic;
+	}
+	if (_hasKey == true) {
+		channel_modes += "k";
+		mode_params += " " + _channel_key;
+	}
+	if (_userLimit != 0) {
+		channel_modes += "l";
+		mode_params += " " + std::to_string(_userLimit);
+	}
+
+	if (channel_modes.empty())
+		return ("");
+
+	return (channel_modes + " " + mode_params);
+}
 
 
 
@@ -63,6 +107,34 @@ void Channel::addClientToMemberList(Client *client) {
 	_members.insert(client);
 }
 
-// void Channel::Debug() const {
+void Channel::addClientToOperatorList(Client *client) {
+	_operators.insert(client);
+}
 
-// }
+void Channel::removeClientFromOperatorList(Client *client) {
+	_operators.erase(client);
+}
+
+bool Channel::isClientOperator(Client *wanted_client) {
+	for (Client * curr_client : _operators) {
+		if (curr_client == wanted_client)
+			return (true);
+	}
+	return false;
+}
+
+bool Channel::isClientMember(Client *wanted_client) {
+	for (Client * curr_client : _members) {
+		if (curr_client == wanted_client)
+			return (true);
+	}
+	return false;
+}
+
+Client*	Channel::getMemberByNick(std::string wanted_nick) {
+	for (Client * curr_client : _members) {
+		if (curr_client->getNick() == wanted_nick)
+			return (curr_client);
+	}
+	return (nullptr);
+}

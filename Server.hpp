@@ -60,5 +60,5 @@ public:
     void sendReplyMsg(Client &client, std::string code, const std::string &msg);
 
     //Command functions ?
-    void addNewChannel(std::string channel_Name);
+    void addNewChannel(std::string channel_Name, Client &client);
 };

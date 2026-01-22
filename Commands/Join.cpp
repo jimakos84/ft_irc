@@ -24,7 +24,7 @@ std::vector<std::string> splitJoinLine(const std::string &line, char delim) {
             result.push_back(current);
             current.clear();
         }
-        else   
+        else
             current += c;
     }
     result.push_back(current);
@@ -58,7 +58,7 @@ void Join::ChannelReplyMsg(Server *server, Client &client, Channel &channel) con
 
     if (channel.getTopic().empty())
         server->sendReplyMsg(client, RPL_NOTOPIC,
-                             channel.getChannelName() + " :No topic is ASDset");
+                             channel.getChannelName() + " :No topic is set");
     else
         server->sendReplyMsg(client, RPL_TOPIC,
                              channel.getChannelName() + " :" + channel.getTopic());
@@ -85,12 +85,12 @@ void Join::executeCmd(Server *server, Client &client, const std::vector<std::str
     }
     std::vector<std::string> channels = splitJoinLine(cmdParams[0], ',');
     for (size_t i = 0; i < channels.size(); ++i) {
-        server->addNewChannel(channels[i]);
+        server->addNewChannel(channels[i], client);
 
         std::map<std::string, Channel>& channel_list = server->getChannelList();
         auto it = channel_list.find(channels[i]);
-        if (it == channel_list.end())
-            return;
+        // if (it == channel_list.end())
+        //     return;
         Channel& channel = it->second;
         if (!addClientToChannel(server, channel, client))
             return;
