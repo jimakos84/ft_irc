@@ -58,6 +58,12 @@ public:
     //messagging
     void sendErrorMsg(Client &client, std::string err_code, const std::string err_msg);
     void sendReplyMsg(Client &client, std::string code, const std::string &msg);
+    void sendErrNicknameInUse(Client &client, const std::string &attemptedNick);
+    void sendNumeric(Client &client,
+                         const std::string &code,
+                         const std::vector<std::string> &params,
+                         const std::string &trailing);
+    
 
     //Command functions ?
     void addNewChannel(std::string channel_Name, Client &client);

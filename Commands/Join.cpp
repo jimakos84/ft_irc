@@ -1,6 +1,5 @@
 
 #include "Join.hpp"
-#include "ParentCommand.hpp"
 #include "../Client.hpp"
 #include "../Server.hpp"
 #include "../Channel.hpp"
@@ -38,7 +37,7 @@ bool Join::addClientToChannel(Server *server, Channel &channel, Client &client) 
 	}
 
 	if (channel.getUserLimit() != 0 && channel.getMemberAmount() == channel.getUserLimit()) {
-		return (server->sendErrorMsg(client, ERR_CHANNELISFULL, channel.getChannelName() + " " + " ::Cannot join channel (+l)"), false);
+		return (server->sendErrorMsg(client, ERR_CHANNELISFULL, channel.getChannelName() + " " + " :Cannot join channel (+l)"), false);
 	}
 
 	client.addJoinedChannel(channel.getChannelName());

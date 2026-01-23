@@ -171,7 +171,7 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
 
 	std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
 
-	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG")
+	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG" || cmdName == "WHOIS")
         return true;
 
     ParentCommand* cmd = _commandList.getCmd(cmdName);
@@ -212,7 +212,7 @@ void Server::sendReplyMsg(Client &client, std::string code, const std::string &m
 
 
 void Server::sendErrorMsg(Client &client, std::string err_code, const std::string err_msg) {
-	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " :" + err_msg + "\r\n";
+	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " " + err_msg + "\r\n";
 	client.sendMsg(error_msg);
 }
 
@@ -239,3 +239,30 @@ void Server::addNewChannel(std::string channel_Name, Client &client) {
 	}
 }
 
+void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNick)
+{
+    std::string curr = client.getNick().empty() ? "*" : client.getNick();
+
+    std::string msg = ":" + _serverName
+        + " 433 " + curr + " " + attemptedNick
+        + " :Nickname is already in use\r\n";
+
+    client.sendMsg(msg);
+}
+
+void Server::sendNumeric(Client &client,
+                         const std::string &code,
+                         const std::vector<std::string> &params,
+                         const std::string &trailing)
+{
+    std::string nick = client.getNick().empty() ? "*" : client.getNick();
+
+    std::string msg = ":" + _serverName + " " + code + " " + nick;
+    for (size_t i = 0; i < params.size(); ++i)
+        msg += " " + params[i];
+    if (!trailing.empty())
+        msg += " :" + trailing;
+    msg += "\r\n";
+
+    client.sendMsg(msg);
+}

@@ -13,7 +13,9 @@
 #define RPL_NAMREPLY   		"353"	//<operator> <channel> : <operator> <nick> * <operator> <nick>
 #define RPL_ENDOFNAMES  	"366"	//"<channel> :End of NAMES list"
 
-//ERROR codes definition
+//ERROR codes definition    
+#define ERR_NOSUCHNICK          "401"
+#define ERR_NOTEXTTOSEND        "412"
 #define ERR_NOSUCHSERVER		"402"	//"<server name> :No such server"
 #define ERR_NOSUCHCHANNEL		"403"	//"<channel name> :No such channel"
 #define ERR_UNKNOWNCOMMAND  	"421"	//"<command> :Unknown command"
@@ -29,7 +31,6 @@
 #define ERR_UNKNOWNMODE			"472"	//"<char> :is unknown mode char to me for <channel>"
 #define ERR_CHANOPRIVSNEEDED	"482"	//"<channel> :You're not channel operator"
 #define ERR_USERSDONTMATCH		"502"	//":Cannot change mode for other users"
-
 
 //ERRRORS
 #define SUCCESS			2
