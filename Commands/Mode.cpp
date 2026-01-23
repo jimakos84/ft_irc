@@ -133,11 +133,11 @@ void Mode::processModeParams(Server *server, Client &client, Channel &channel, c
 			if (processKeyMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
 				return;
 		}
-		else if (curr_char == 'k') {
+		else if (curr_char == 'l') {
 			if (processLimitMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
 				return;
 		}
-		else if (curr_char == 'k') {
+		else if (curr_char == 'o') {
 			if (processOperatorMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
 				return;
 		}
@@ -168,9 +168,10 @@ void Mode::executeCmd(Server *server, Client &client, const std::vector<std::str
 		return;
 	}
 
-	for (unsigned long i = 0; i < cmdParams.size(); i++) {
+	//DELETE
+	/*for (unsigned long i = 0; i < cmdParams.size(); i++) {
 		std::cout << "Param[" << i << "]: " << cmdParams[i] << std::endl;
-	}
+	}*/
 
 	if (cmdParams[0][0] == '#')
 		handleChannelMode(server, client, cmdParams);
