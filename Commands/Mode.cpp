@@ -133,11 +133,11 @@ void Mode::processModeParams(Server *server, Client &client, Channel &channel, c
 			if (processKeyMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
 				return;
 		}
-		else if (curr_char == 'k') {
+		else if (curr_char == 'l') {
 			if (processLimitMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
 				return;
 		}
-		else if (curr_char == 'k') {
+		else if (curr_char == 'o') {
 			if (processOperatorMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
 				return;
 		}

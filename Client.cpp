@@ -97,3 +97,7 @@ void Client::sendWelcomeMsg() {
 void Client::addJoinedChannel(std::string channel_joined) {
 	_joined_channels.insert(channel_joined);
 }
+
+void Client::leaveChannel(std::string channel_to_leave) {
+	_joined_channels.erase(channel_to_leave);
+}

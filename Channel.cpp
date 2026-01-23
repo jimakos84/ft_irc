@@ -37,7 +37,7 @@ void Channel::setUserLimit(size_t new_limit) {
 	_userLimit = new_limit;
 }
 
-bool Channel::getInviteOnly() const {
+bool Channel::getInviteOnlyStatus() const {
 	return (_inviteOnly);
 }
 
@@ -55,6 +55,10 @@ std::string Channel::getTopic() const {
 
 bool Channel::getHasKey() const {
 	return(_hasKey);
+}
+
+std::string Channel::getKeyValue() const {
+	return(_channel_key);
 }
 
 const std::set<Client*>& Channel::getMembers() const {
@@ -129,6 +133,14 @@ bool Channel::isClientOperator(Client *wanted_client) {
 
 bool Channel::isClientMember(Client *wanted_client) {
 	for (Client * curr_client : _members) {
+		if (curr_client == wanted_client)
+			return (true);
+	}
+	return false;
+}
+
+bool Channel::isClientInvited(std::string wanted_client) {
+	for (std::string curr_client : _invitedClients) {
 		if (curr_client == wanted_client)
 			return (true);
 	}

@@ -16,9 +16,10 @@ bool Kick::cmdNeedsRegistration() const {
 void kickUser(Client &client, Client &target, Channel &channel, const std::vector<std::string> &cmdParams) {
     channel.removeClientFromMemberList(&target);
     channel.removeClientFromOperatorList(&target);   //this skips if target doesnt exist right?
+    client.leaveChannel(channel.getChannelName());
 
     //sendmsg
-    std::string kick_msg = ":" + client.getClientFullIdentifier() + " KICK " + channel.getChannelName() 
+    std::string kick_msg = ":" + client.getClientFullIdentifier() + " KICK " + channel.getChannelName()
     + " " + target.getNick();
     if (cmdParams.size() == 3)
         kick_msg += " :" + cmdParams[2];
@@ -27,12 +28,14 @@ void kickUser(Client &client, Client &target, Channel &channel, const std::vecto
     const std::set<Client*>& members = channel.getMembers();
 	for (Client * inform : members)
 		inform->sendMsg(kick_msg);
+
+    target.sendMsg(kick_msg);
 }
 
 void Kick::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0 || cmdParams.size() == 1)
         return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Kick"), void(0));
-    
+
     /*//DELETE
     for (unsigned long i = 0; i < cmdParams.size(); i++) {
 		std::cout << "Param[" << i << "]: " << cmdParams[i] << std::endl;
@@ -47,7 +50,7 @@ void Kick::executeCmd(Server *server, Client &client, const std::vector<std::str
 
     if (!((kick_channels.size() == 1 && users_to_kick.size() >= 1) || kick_channels.size() == users_to_kick.size()))
         return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "KICK"), void(0));
-    
+
     for (size_t i = 0; i < users_to_kick.size(); ++i) {
         const std::string &channelName = (kick_channels.size() == 1 ? kick_channels[0] : kick_channels[i]);
 

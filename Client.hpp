@@ -54,5 +54,6 @@ class Client {
 		//message formatting for the server reply
 		void sendMsg(const std::string &msg);
 		void addJoinedChannel(std::string channel_joined);
+		void leaveChannel(std::string channel_to_leave);
 
 };
