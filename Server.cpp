@@ -1,6 +1,5 @@
 
 #include "Server.hpp"
-#include "Parser.hpp"
 #include <fcntl.h>
 
 static volatile sig_atomic_t    g_running = 1;
@@ -155,7 +154,6 @@ void    Server::receiveFromClient(int fd)
 	while (client.completeMessageExists() == true)
 	{
 		std::string msg = client.extractMessage();
-		// std::cout << "\n\n[PARSED] " << msg << std::endl;
 		if (!commandExecute(client, msg))
 			break;
 	}
@@ -173,7 +171,7 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
 
 	std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
 
-	if (cmdName == "CAP" || cmdName == "WHO")
+	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG" || cmdName == "WHOIS")
         return true;
 
     ParentCommand* cmd = _commandList.getCmd(cmdName);
@@ -205,13 +203,16 @@ void    Server::removeClient(int fd)
 	std::cout << "Client disconnected: fd=" << fd << std::endl;
 }
 
-void Server::sendReplyMsg(Client &client, std::string RPL_code, const std::string msg) {
-	std::string reply_msg = ":" + _serverName + " " + RPL_code + msg + "\r\n";
-	client.sendMsg(reply_msg);
+void Server::sendReplyMsg(Client &client, std::string code, const std::string &msg)
+{
+    std::string reply = ":" + _serverName + " " + code + " " + client.getNick()
+                      + " " + msg + "\r\n";
+    client.sendMsg(reply);
 }
 
+
 void Server::sendErrorMsg(Client &client, std::string err_code, const std::string err_msg) {
-	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " :" + err_msg + "\r\n";
+	std::string error_msg = ":" + _serverName + " " + err_code + " " + client.getNick() + " " + err_msg + "\r\n";
 	client.sendMsg(error_msg);
 }
 
@@ -223,15 +224,45 @@ std::string Server::getPass() const {
 	return (_password);
 }
 
-std::map<int, Client> Server::getClientList() const {
-	return (_clients);
+std::map<int, Client>& Server::getClientList() { return _clients; }
+const std::map<int, Client>& Server::getClientList() const { return _clients; }
+
+std::map<std::string, Channel>& Server::getChannelList() { return _channels; }
+const std::map<std::string, Channel>& Server::getChannelList() const { return _channels; }
+
+
+void Server::addNewChannel(std::string channel_Name, Client &client) {
+	auto result = _channels.emplace(channel_Name, Channel(channel_Name));	//returns std::pair<iterator, bool> wher iterator to the element (created or existing), bool/second if insertion happened or not
+	if (result.second == true) {
+		Channel &channel = result.first->second;
+		channel.addClientToOperatorList(&client);
+	}
 }
 
-std::map<std::string, Channel> Server::getChannelList() const {
-	return (_channels);
+void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNick)
+{
+    std::string curr = client.getNick().empty() ? "*" : client.getNick();
+
+    std::string msg = ":" + _serverName
+        + " 433 " + curr + " " + attemptedNick
+        + " :Nickname is already in use\r\n";
+
+    client.sendMsg(msg);
 }
 
-void Server::addNewChannel(std::string channel_Name) {
-	_channels.emplace(channel_Name, channel_Name);
-}
+void Server::sendNumeric(Client &client,
+                         const std::string &code,
+                         const std::vector<std::string> &params,
+                         const std::string &trailing)
+{
+    std::string nick = client.getNick().empty() ? "*" : client.getNick();
 
+    std::string msg = ":" + _serverName + " " + code + " " + nick;
+    for (size_t i = 0; i < params.size(); ++i)
+        msg += " " + params[i];
+    if (!trailing.empty())
+        msg += " :" + trailing;
+    msg += "\r\n";
+
+    client.sendMsg(msg);
+}

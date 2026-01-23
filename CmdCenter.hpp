@@ -11,6 +11,8 @@
 #include "./Commands/User.hpp"
 #include "./Commands/Mode.hpp"
 #include "./Commands/Join.hpp"
+#include "./Commands/Kick.hpp"
+#include "./Commands/Privmsg.hpp"
 #include "./Commands/Invite.hpp"
 
 class CmdCenter {

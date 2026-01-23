@@ -15,7 +15,7 @@ class Client {
 		std::string _realname;
 		std::string _username;
 
-		std::set<std::string> _joined_channels;	//implement
+		std::set<std::string> _joined_channels;
 		std::string _buffer;
 		bool _isRegistered;
 		bool _isOperator; //implement
@@ -56,5 +56,6 @@ class Client {
 		//message formatting for the server reply
 		void sendMsg(const std::string &msg);
 		void addJoinedChannel(std::string channel_joined);
+		void leaveChannel(std::string channel_to_leave);
 
 };

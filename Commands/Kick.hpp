@@ -3,13 +3,15 @@
 
 #include "ParentCommand.hpp"
 
-class Nick : public ParentCommand {
-    private:
-        void checkNickandSet(Server *server, Client &client, const std::string &new_nick);
+class Channel;
 
+class Kick : public ParentCommand {
+    private:
+        std::vector<std::string> _kick_channels;
+        
     public:
-        Nick();
-        ~Nick();
+        Kick();
+        ~Kick();
         bool cmdNeedsRegistration() const override;
         void executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) override;
 };

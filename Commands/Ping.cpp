@@ -17,6 +17,6 @@ void Ping::executeCmd(Server *server, Client &client, const std::vector<std::str
         return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Ping"), void(0));
     if (cmdParams[0] != server->getServerName())
         return (server->sendErrorMsg(client, ERR_NOSUCHSERVER, "No such server exists"), void(0));
-    client.sendMsg(":" + server->getServerName() + " Ping :" + cmdParams[0] + "\r\n");
+    client.sendMsg(":" + server->getServerName() + " PONG :" + cmdParams[0] + "\r\n");
     return;
 }
