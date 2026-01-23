@@ -35,10 +35,11 @@ class Channel {
 
 		//Get functions
 		std::string		getChannelName() const;
-		bool 			getInviteOnly() const;
+		bool 			getInviteOnlyStatus() const;
 		size_t 			getUserLimit() const;
 		std::string 	getTopic() const;
 		bool 			getHasKey() const;
+		std::string		getKeyValue() const;
 		std::string		getChannelmode();
 		const std::set<Client*>& getMembers() const;
 
@@ -46,10 +47,12 @@ class Channel {
 		int 		addInvitedClient(Client *client, std::string VIP);
 		void 		removeClientFromInvited(std::string NIP);
 		void		addClientToMemberList(Client *client);
+		void		removeClientFromMemberList(Client *client);
 		size_t 		getMemberAmount() const;
 		void 		addClientToOperatorList(Client *client);
 		void 		removeClientFromOperatorList(Client *client);
 		bool 		isClientOperator(Client *wanted_client);
 		bool 		isClientMember(Client *wanted_client);
+		bool		isClientInvited(std::string wanted_client);
 		Client*		getMemberByNick(std::string wanted_nick);
 };
