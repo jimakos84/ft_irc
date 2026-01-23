@@ -15,6 +15,7 @@ class Invite : public ParentCommand {
 
 		bool addClientToChannel(Server *server, Channel &channel, Client &client);
 		void ChannelReplyMsg(Server *server, Client &client, Channel &channel) const;
-        bool getClientByNick(Server* server, const std::string& nickName, Client& outClient);
-        Channel* getChannelByName(Server *server, std::string& name);
+        // bool getClientByNick(Server* server, const std::string& nickName);
+        Client* getClientByNick(Server* server, const std::string& nickName);
+        Channel* getChannelByName(Server *server, const std::string& name);
 };
