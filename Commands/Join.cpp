@@ -1,6 +1,5 @@
 
 #include "Join.hpp"
-#include "ParentCommand.hpp"
 #include "../Client.hpp"
 #include "../Server.hpp"
 #include "../Channel.hpp"
