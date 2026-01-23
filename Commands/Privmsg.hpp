@@ -12,5 +12,6 @@ class Privmsg : public ParentCommand {
         bool cmdNeedsRegistration() const override;
         void executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) override;
 
-        void ChannelReplyMsg(Server *server, Client &client, Channel &channel) const;
+        void ChannelReplyMsg(Client &client, Channel &channel, const std::string &text) const;
+        void ClientPrivMsg(Client &client, Client &to, const std::string &text) const;
 };

@@ -5,7 +5,7 @@
 
 class Nick : public ParentCommand {
     private:
-        void checkNickandSet(Server *server, Client &client_requesting_change, std::string new_nick);
+        void checkNickandSet(Server *server, Client &client, const std::string &new_nick);
 
     public:
         Nick();
