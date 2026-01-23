@@ -15,7 +15,7 @@ bool Privmsg::cmdNeedsRegistration() const {
 void Privmsg::ClientPrivMsg(Client &client, Client &to, const std::string &text) const {
     std::string msg = ":" + client.getClientFullIdentifier() + " PRIVMSG " + to.getNick() 
                     + " :" + text + "\r\n";
-    client.sendMsg(msg);
+    to.sendMsg(msg);
 }
 
 
