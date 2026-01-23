@@ -66,5 +66,5 @@ public:
     
 
     //Command functions ?
-    void addNewChannel(std::string channel_Name);
+    void addNewChannel(std::string channel_Name, Client &client);
 };

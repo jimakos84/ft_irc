@@ -13,11 +13,12 @@ class Channel {
 
 		// Modes
 		bool		_inviteOnly;
-		bool		_topicSet;
+		bool		_isTopicRestricted;
+		bool		_hasKey;
 		size_t		_userLimit;
 
-		std::set<Client*> _members;
-		std::set<Client*> _operators;
+		std::set<Client*> 		_members;
+		std::set<Client*> 		_operators;
 		std::set<std::string>	_invitedClients; //VIPs <sunglasses emoji>
 
 
@@ -26,13 +27,19 @@ class Channel {
 		~Channel();
 
 		//Set functions
-		// bool setInviteOnly(bool status);
+		void setInviteOnly(bool status);
+		void setTopic(std::string new_topic);
+		void setTopicRestriction(bool status);
+		void setKey(bool status, std::string new_key);
+		void setUserLimit(size_t new_limit);
 
 		//Get functions
 		std::string		getChannelName() const;
 		bool 			getInviteOnly() const;
 		size_t 			getUserLimit() const;
 		std::string 	getTopic() const;
+		bool 			getHasKey() const;
+		std::string		getChannelmode();
 		const std::set<Client*>& getMembers() const;
 
 		//other things, this and that
@@ -40,4 +47,9 @@ class Channel {
 		void 		removeClientFromInvited(std::string NIP);
 		void		addClientToMemberList(Client *client);
 		size_t 		getMemberAmount() const;
+		void 		addClientToOperatorList(Client *client);
+		void 		removeClientFromOperatorList(Client *client);
+		bool 		isClientOperator(Client *wanted_client);
+		bool 		isClientMember(Client *wanted_client);
+		Client*		getMemberByNick(std::string wanted_nick);
 };

@@ -15,7 +15,7 @@ class Client {
 		std::string _realname;
 		std::string _username;
 
-		std::set<std::string> _joined_channels;	//implement
+		std::set<std::string> _joined_channels;
 		std::string _buffer;
 		bool _isRegistered;
 		// bool _isOperator; //implement

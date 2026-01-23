@@ -231,8 +231,12 @@ std::map<std::string, Channel>& Server::getChannelList() { return _channels; }
 const std::map<std::string, Channel>& Server::getChannelList() const { return _channels; }
 
 
-void Server::addNewChannel(std::string channel_Name) {
-	_channels.emplace(channel_Name, channel_Name);
+void Server::addNewChannel(std::string channel_Name, Client &client) {
+	auto result = _channels.emplace(channel_Name, Channel(channel_Name));	//returns std::pair<iterator, bool> wher iterator to the element (created or existing), bool/second if insertion happened or not
+	if (result.second == true) {
+		Channel &channel = result.first->second;
+		channel.addClientToOperatorList(&client);
+	}
 }
 
 void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNick)

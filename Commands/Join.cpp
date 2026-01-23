@@ -23,7 +23,7 @@ std::vector<std::string> splitJoinLine(const std::string &line, char delim) {
             result.push_back(current);
             current.clear();
         }
-        else   
+        else
             current += c;
     }
     result.push_back(current);
@@ -84,12 +84,12 @@ void Join::executeCmd(Server *server, Client &client, const std::vector<std::str
     }
     std::vector<std::string> channels = splitJoinLine(cmdParams[0], ',');
     for (size_t i = 0; i < channels.size(); ++i) {
-        server->addNewChannel(channels[i]);
+        server->addNewChannel(channels[i], client);
 
         std::map<std::string, Channel>& channel_list = server->getChannelList();
         auto it = channel_list.find(channels[i]);
-        if (it == channel_list.end())
-            return;
+        // if (it == channel_list.end())
+        //     return;
         Channel& channel = it->second;
         if (!addClientToChannel(server, channel, client))
             return;
