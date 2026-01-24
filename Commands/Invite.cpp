@@ -3,7 +3,6 @@
 #include "../Client.hpp"
 #include "../Server.hpp"
 #include "../Channel.hpp"
-#include <cstdint>
 
 
 Invite::Invite() {}
@@ -14,22 +13,12 @@ bool Invite::cmdNeedsRegistration() const {
     return (true);
 }
 
-// bool Invite::getClientByNick(Server* server,
-//                             const std::string& nickName,
-//                             Client& outClient)
-// {
-//     auto client_list = server->getClientList();
-
-//     for (const auto& [fd, client] : client_list)
-//     {
-//         if (client.getNick() == nickName)
-//         {
-//             outClient = client; // copy
-//             return true;
-//         }
-//     }
-//     return false;
-// }
+void Invite::sendInvitationMsg(Server* server, Client& client, Client& invitee, Channel* channel)
+{
+    server->sendReplyMsg(client, RPL_INVITING, "Invitation sent to " + invitee.getNick() + " to join "  + channel->getChannelName());
+    server->sendReplyMsg(invitee, RPL_INVITING, client.getNick() + " INVITE "  + invitee.getNick() + " to " + channel->getChannelName());
+    return ;
+}
 
 Client* Invite::getClientByNick(Server* server, const std::string& nickName)
 {
@@ -93,6 +82,6 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
         return ;
     }
 
-    server->sendReplyMsg(client, RPL_INVITING, "You got invitation");
+    sendInvitationMsg(server, client, *invitee, channel);
 
 }

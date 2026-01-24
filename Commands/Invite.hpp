@@ -18,4 +18,5 @@ class Invite : public ParentCommand {
         // bool getClientByNick(Server* server, const std::string& nickName);
         Client* getClientByNick(Server* server, const std::string& nickName);
         Channel* getChannelByName(Server *server, const std::string& name);
+        void sendInvitationMsg(Server* server, Client& client, Client& invitee, Channel* channel);
 };
