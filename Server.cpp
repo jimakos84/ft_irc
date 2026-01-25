@@ -249,20 +249,3 @@ void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNi
 
     client.sendMsg(msg);
 }
-
-void Server::sendNumeric(Client &client,
-                         const std::string &code,
-                         const std::vector<std::string> &params,
-                         const std::string &trailing)
-{
-    std::string nick = client.getNick().empty() ? "*" : client.getNick();
-
-    std::string msg = ":" + _serverName + " " + code + " " + nick;
-    for (size_t i = 0; i < params.size(); ++i)
-        msg += " " + params[i];
-    if (!trailing.empty())
-        msg += " :" + trailing;
-    msg += "\r\n";
-
-    client.sendMsg(msg);
-}

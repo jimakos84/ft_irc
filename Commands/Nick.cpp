@@ -3,6 +3,7 @@
 #include "ParentCommand.hpp"
 #include "../Client.hpp"
 #include "../Server.hpp"
+#include "../Channel.hpp"
 
 Nick::Nick() {}
 
@@ -10,6 +11,17 @@ Nick::~Nick() {}
 
 bool Nick::cmdNeedsRegistration() const {
     return (false);
+}
+
+Channel* Nick::getChannelByName(Server *server, const std::string& name)
+{
+    std::map<std::string, Channel>& channel_list = server->getChannelList();
+    auto it = channel_list.find(name);
+    if (it != channel_list.end())
+    {
+        return (&it->second);
+    }
+    return (nullptr);
 }
 
 
@@ -26,8 +38,32 @@ void Nick::executeCmd(Server *server, Client &client, const std::vector<std::str
         checkNickandSet(server, client, cmdParams[0]);
 }
 
+void Nick::broadcastToChannels(Server *server, Client &client, std::string msg) {
+    (void)server;
+    std::set<int> already_sent;
+    const std::set<std::string>& channels = client.getJoinedChannels();
+    for (std::set<std::string>::const_iterator it = channels.begin();
+            it != channels.end();
+            ++it)
+    {
+        Channel*    _channel = getChannelByName(server, *it);
+        const std::set<Client*> &_members = _channel->getMembers();
+        for (std::set<Client*>::const_iterator m = _members.begin(); m != _members.end(); ++m)
+        {
+            Client *other = *m;
+            if (!other)
+                continue;
+            if (other->getFd() == client.getFd())
+                continue;
+            if (already_sent.insert(other->getFd()).second)
+                other->sendMsg(msg);
+        }
+    }
+}
+
 void Nick::checkNickandSet(Server *server, Client &client, const std::string &new_nick)
 {
+    (void)server;
     if (new_nick == client.getNick())
         return;
 
@@ -44,5 +80,6 @@ void Nick::checkNickandSet(Server *server, Client &client, const std::string &ne
     }
     std::string msg = ":" + client.getClientFullIdentifier() + " NICK " + ":" + new_nick + "\r\n";
     client.sendMsg(msg);
+    broadcastToChannels(server, client, msg);
     client.setNick(new_nick);
 }
