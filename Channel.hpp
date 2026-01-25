@@ -4,7 +4,6 @@
 #include <iostream>
 #include <set>
 #include "Client.hpp"
-#include "Server.hpp"
 
 class Server;
 
