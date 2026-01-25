@@ -3,7 +3,6 @@
 #include "../Client.hpp"
 #include "../Server.hpp"
 #include "../Channel.hpp"
-#include <cstdint>
 
 
 Invite::Invite() {}
@@ -14,27 +13,28 @@ bool Invite::cmdNeedsRegistration() const {
     return (true);
 }
 
-// bool Invite::getClientByNick(Server* server,
-//                             const std::string& nickName,
-//                             Client& outClient)
-// {
-//     auto client_list = server->getClientList();
+void sendInviteeMsg(Client &invitee, const std::string &msg, std::string serverName)
+{
+    std::string reply = ":" + serverName + " " + msg + "\r\n";
+    invitee.sendMsg(reply);
+}
 
-//     for (const auto& [fd, client] : client_list)
-//     {
-//         if (client.getNick() == nickName)
-//         {
-//             outClient = client; // copy
-//             return true;
-//         }
-//     }
-//     return false;
-// }
+
+void Invite::sendInvitationMsg(Server* server, Client& client, Client& invitee, Channel* channel)
+{
+    server->sendReplyMsg(client, RPL_INVITING, invitee.getNick() + " " + channel->getChannelName());
+    std::string serverName = server->getServerName();
+    std::string invitee_msg = client.getClientFullIdentifier() + " INVITE "  + invitee.getNick() + " :" + channel->getChannelName();
+    std::cout << "invitation " << invitee_msg << std::endl;
+    sendInviteeMsg(invitee, invitee_msg, serverName);
+    // client.sendMsg(invitee_msg);
+    // invitee.sendMsg(invitee_msg);
+    return ;
+}
 
 Client* Invite::getClientByNick(Server* server, const std::string& nickName)
 {
     auto& client_list = server->getClientList();
-
     for (auto it = client_list.begin(); it != client_list.end(); ++it)
     {
         if (it->second.getNick() == nickName)
@@ -93,6 +93,6 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
         return ;
     }
 
-    server->sendReplyMsg(client, RPL_INVITING, "You got invitation");
+    sendInvitationMsg(server, client, *invitee, channel);
 
 }
