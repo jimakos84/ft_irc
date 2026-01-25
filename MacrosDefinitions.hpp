@@ -13,7 +13,7 @@
 #define RPL_NAMREPLY   		"353"	//<operator> <channel> : <operator> <nick> * <operator> <nick>
 #define RPL_ENDOFNAMES  	"366"	//"<channel> :End of NAMES list"
 
-//ERROR codes definition    
+//ERROR codes definition
 #define ERR_NOSUCHNICK          "401"
 #define ERR_NOTEXTTOSEND        "412"
 #define ERR_NOSUCHSERVER		"402"	//"<server name> :No such server"
@@ -37,7 +37,8 @@
 
 //ERRRORS
 #define SUCCESS			2
-#define ALREADY_MEMBER	3
-#define FULL_CHANNEL	4
+#define FAIL			3
+#define ALREADY_MEMBER	4
+#define FULL_CHANNEL	5
 
 

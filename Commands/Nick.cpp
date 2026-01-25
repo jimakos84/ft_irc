@@ -42,5 +42,7 @@ void Nick::checkNickandSet(Server *server, Client &client, const std::string &ne
             return;
         }
     }
+    std::string msg = ":" + client.getClientFullIdentifier() + " NICK " + ":" + new_nick + "\r\n";
+    client.sendMsg(msg);
     client.setNick(new_nick);
 }
