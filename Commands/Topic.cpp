@@ -48,8 +48,6 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     }
     if (cmdParams.size() < 2)
     {
-        std::cout << "cmdparam[0]: " << cmdParams[0] << std::endl;
-        //std::cout << "cmdparam[1]: " << cmdParams[1] << std::endl;
         if (channel->getTopic() == "")
         {    
             server->sendReplyMsg(client, RPL_NOTOPIC, channel->getChannelName() + " :No topic is set");
@@ -81,6 +79,7 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     }
     
     channel->setTopic(newTopic);
+    std::string msg = channel.getChannelName() + " :" + channel.getTopic() + "\r\n"
     client.sendMsg(channel->getChannelName() + " :" + newTopic + "\r\n");
     return ;
 }
