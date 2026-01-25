@@ -39,6 +39,7 @@ class Channel {
 		//Get functions
 		std::string		getChannelName() const;
 		bool 			getInviteOnlyStatus() const;
+		bool 			getTopicRestrictionStatus() const;
 		size_t 			getUserLimit() const;
 		std::string 	getTopic() const;
 		bool 			getHasKey() const;

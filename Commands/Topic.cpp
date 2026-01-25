@@ -24,9 +24,17 @@ Channel* Topic::getChannelByName(Server *server, const std::string& name)
     return (nullptr);
 }
 
+static bool isOnlyWhitespace(const std::string& s)
+{
+    for (char c : s)
+        if (!std::isspace(static_cast<unsigned char>(c)))
+            return false;
+    return true;
+}
+
 void Topic::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0) {
-        server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Join");
+        server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Topic");
         return;
     }
     std::string channelName = cmdParams[0];
@@ -35,17 +43,22 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
 
     if (!channel)
     {
-        server->sendErrorMsg(client, ERR_NOTONCHANNEL, channelName + " :No such channel");
+        server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, channelName + " :No such channel");
         return ;
     }
-    if (cmdParams.size() == 1)
+    if (cmdParams.size() < 2)
     {
+        std::cout << "cmdparam[0]: " << cmdParams[0] << std::endl;
+        //std::cout << "cmdparam[1]: " << cmdParams[1] << std::endl;
         if (channel->getTopic() == "")
-            server->sendReplyMsg(client, RPL_NOTOPIC, channel->getChannelName() + ":No topic is set");
+        {    
+            server->sendReplyMsg(client, RPL_NOTOPIC, channel->getChannelName() + " :No topic is set");
+        }
         else
-            server->sendReplyMsg(client, RPL_TOPIC, channel->getChannelName() + " 's Topic:" + channel->getTopic());
+            server->sendReplyMsg(client, RPL_TOPIC, channel->getChannelName() + " :" + channel->getTopic());
+        return ;
     }
-    if (channel->getInviteOnlyStatus() == true)
+    if (channel->getTopicRestrictionStatus() == true)
     {
         if (channel->isClientOperator(&client) == false)
         {
@@ -56,13 +69,18 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     if (channel->isClientMember(&client) == false)
     {
         server->sendErrorMsg(client, ERR_NOTONCHANNEL, client.getNick() + " :You are not on channel ");
+        return ;
     }
-    if (cmdParams[1].empty())
+    std::string newTopic = cmdParams[1];
+
+    if (newTopic.empty() || isOnlyWhitespace(newTopic))
     {
         channel->setTopic("");
         server->sendReplyMsg(client, RPL_NOTOPIC, channel->getChannelName() + " :Topic is removed");
+        return ;
     }
-    std::string newTopic = cmdParams[1];
+    
     channel->setTopic(newTopic);
-    server->sendReplyMsg(client, RPL_TOPIC, channel->getChannelName() + " :New topic is set " + newTopic);
+    client.sendMsg(channel->getChannelName() + " :" + newTopic + "\r\n");
+    return ;
 }
