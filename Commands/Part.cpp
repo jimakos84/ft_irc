@@ -47,14 +47,20 @@ void Part::executeCmd(Server *server, Client &client, const std::vector<std::str
         return;
     }
     std::set<int> already_sent;
-    std::vector<std::string> channels = splitPartLine(cmdParams[0], ',');
-    for (std::string chans : channels) {
-        if (chans[0] != '#')
-            return;
+    std::vector<std::string> channel_args = splitPartLine(cmdParams[0], ',');
+
+    for (std::string chans : channel_args) {
+        if (chans.empty() || chans[0] != '#')
+            continue;
         std::string msg = ":" + client.getClientFullIdentifier() + " PART " + chans + "\r\n";
-        client.sendMsg(msg);
         Channel *chan = getChannelByName(server, chans);
+        if (!chan) {
+            server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, chans + " :No such channel");
+            continue;
+        }
+        client.sendMsg(msg);
         chan->removeClientFromMemberList(&client);
+        client.leaveChannel(chans);
         std::cout << "Members of " << chans << " after PART:" << std::endl;
 
         const std::set<Client*> &members = chan->getMembers();
