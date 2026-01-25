@@ -4,6 +4,9 @@
 #include <iostream>
 #include <set>
 #include "Client.hpp"
+#include "Server.hpp"
+
+class Server;
 
 class Channel {
 	private:
@@ -55,4 +58,8 @@ class Channel {
 		bool 		isClientMember(Client *wanted_client);
 		bool		isClientInvited(std::string wanted_client);
 		Client*		getMemberByNick(std::string wanted_nick);
+		void		printChannelName(Server* server, Client& client, std::string name); //debug delete
+		bool 		isValidChannelName(std::string name);
+		bool		isExistingChannel(Server* server, std::string& channelName);
+		bool 		isInviteOnly() const;
 };

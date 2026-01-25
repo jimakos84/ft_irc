@@ -24,10 +24,23 @@ void Mode::handleUserMode(Server *server, Client &client, const std::vector<std:
 
 bool validate_ModeStr(std::string mode_line) {
 	for (char c : mode_line) {
-		if (c != 'i' && c != 't' && c != 'k' && c != 'l' && c != 'o' && c != '+' && c != '-')
+		if (c != 'i' && c != 't' && c != 'k' && c != 'l' && c != 'o' && c != 'b' && c != '+' && c != '-')
 			return (false);
 	}
 	return (true);
+}
+
+int checksParamNeeds(char mode_char, char sign, size_t paramIndex, size_t paramSize) {
+	if (mode_char == 'i' || mode_char == 't' || mode_char == 'b') {
+		return (SUCCESS);
+	}
+	if (mode_char == 'k' || mode_char == 'l' || mode_char == 'o') {
+		if (sign == '-')
+			return (SUCCESS);
+	}
+	if (paramIndex >= paramSize)
+		return (FAIL);
+	return (SUCCESS);
 }
 
 void broadcast_mode_msg(Client &client, Channel &channel, std::string &appliedModes, std::vector<std::string> &appliedParams) {
@@ -48,8 +61,8 @@ void broadcast_mode_msg(Client &client, Channel &channel, std::string &appliedMo
 
 bool processKeyMode(Server *server, Client &client, Channel &channel, const std::vector<std::string> &cmdParams, std::string &appliedModes, std::vector<std::string> &appliedParams, const char &sign, size_t paramIndex) {
 	if (sign == '+') {
-		if (paramIndex >= cmdParams.size())
-			return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Key Setting"), false);
+		// if (paramIndex >= cmdParams.size())
+		// 	return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Key Setting"), false);
 
     	if (channel.getHasKey())
             return (server->sendErrorMsg(client, ERR_KEYSET, channel.getChannelName() + " :Channel key already set"), false);
@@ -64,10 +77,33 @@ bool processKeyMode(Server *server, Client &client, Channel &channel, const std:
 }
 
 bool processLimitMode(Server *server, Client &client, Channel &channel, const std::vector<std::string> &cmdParams, std::string &appliedModes, std::vector<std::string> &appliedParams, const char &sign, size_t paramIndex) {
+	// (void)server;
+	// (void)client;
+	// if (paramIndex >= cmdParams.size())
+	// 		return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Limit Setting"), false);
+	// long limit;
+	// try {
+    // 	limit = std::stol(cmdParams[paramIndex]);
+    // 	if (limit <= 0)
+    //     	throw std::out_of_range("limit must be positive");
+	// }
+	// catch (...) {
+	// 	return false;
+	// }
+
+
 	if (sign == '+')
 	{
-		if (paramIndex >= cmdParams.size())
-			return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Limit Setting"), false);
+		// if (paramIndex >= cmdParams.size())
+		// 	return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Limit Setting"), false);
+
+		// std::cout << "I AM INSIDE: cmdParams[paramIndex]: " << cmdParams[paramIndex] << std::endl;
+	for (char c : cmdParams[paramIndex]) {
+		if (c < '0' || c > '9')
+			// return (false);
+			return (server->sendErrorMsg(client, ERR_UNKNOWNMODE, cmdParams[paramIndex] + " :is unknown mode char to me for " + channel.getChannelName()), false);
+	}
+
 		channel.setUserLimit(std::stol(cmdParams[paramIndex]));
         appliedParams.push_back(cmdParams[paramIndex++]);
 	}
@@ -80,8 +116,8 @@ bool processLimitMode(Server *server, Client &client, Channel &channel, const st
 bool processOperatorMode(Server *server, Client &client, Channel &channel, const std::vector<std::string> &cmdParams, std::string &appliedModes, std::vector<std::string> &appliedParams, const char &sign, size_t paramIndex) {
 	if (!channel.isClientOperator(&client))
 		return (server->sendErrorMsg(client, ERR_CHANOPRIVSNEEDED, channel.getChannelName() + " :You're not channel operator"), false);
-	if (paramIndex >= cmdParams.size())
-		return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Operator Setting"), false);
+	// if (paramIndex >= cmdParams.size())
+	// 	return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Operator Setting"), false);
 
 	Client *target = channel.getMemberByNick(cmdParams[paramIndex]);
 	if (!target || !channel.isClientMember(target))
@@ -116,9 +152,24 @@ void Mode::processModeParams(Server *server, Client &client, Channel &channel, c
 
 	for (size_t i = 0; i < modeStr.size(); ++i) {
 		char curr_char = modeStr[i];
+
+		// //delete
+		// std::cout << "\nCurr char: " << curr_char << std::endl;
+		// std::cout << "Param Index: " << paramIndex << std::endl;
+		// std::cout << "Index i: " << i << std::endl;
+		// std::cout << "Params size: " << cmdParams.size() << std::endl;
+		// if (i < cmdParams.size())
+		// 	std::cout << "cmdParams[i]: " << cmdParams[i] << std::endl;
+		// if (paramIndex < cmdParams.size())
+		// 	std::cout << "cmdParams[paramIndex]: " << cmdParams[paramIndex] << std::endl;
+
 		if (curr_char == '+' || curr_char == '-') {
 			sign = curr_char;
 			appliedModes += curr_char;
+			continue;
+		}
+		if (checksParamNeeds(curr_char, sign, paramIndex, cmdParams.size()) == FAIL) {
+			server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for all delete me");
 			continue;
 		}
 		if (curr_char == 'i') {
@@ -130,19 +181,34 @@ void Mode::processModeParams(Server *server, Client &client, Channel &channel, c
             appliedModes += curr_char;
 		}
 		else if (curr_char == 'k') {
-			if (processKeyMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
-				return;
+			paramIndex++;
+			if (processKeyMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex - 1) == false)
+				continue;
+			// paramIndex++;
 		}
 		else if (curr_char == 'l') {
-			if (processLimitMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
-				return;
+			paramIndex++;
+			if (processLimitMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex - 1) == false)
+				// return;
+				continue;
+			// paramIndex++;
 		}
 		else if (curr_char == 'o') {
-			if (processOperatorMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex) == false)
-				return;
+			paramIndex++;
+			if (processOperatorMode(server, client, channel, cmdParams, appliedModes, appliedParams, sign, paramIndex - 1) == false)
+				// return;
+				continue;
+			// paramIndex++;
 		}
-	 }
-	 broadcast_mode_msg(client, channel, appliedModes, appliedParams);
+		else if (curr_char == 'b')
+			continue;
+	}
+	// std::cout << "MODESSSS: " << appliedModes << std::endl;
+	// if (appliedModes.size() > 1) //here i think it could be if (appliedModes[appliedModes.size() - 1] != '+' || appliedModes[appliedModes.size() - 1] != '-')
+	char last_char = appliedModes[appliedModes.size() - 1];
+	// std::cout << "last:: " << last_char << std::endl;
+	if (last_char != '+' && last_char != '-')
+		broadcast_mode_msg(client, channel, appliedModes, appliedParams);
 }
 
 
