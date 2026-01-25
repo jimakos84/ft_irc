@@ -10,6 +10,7 @@ CmdCenter::CmdCenter() {
 	_commands["JOIN"] = std::make_unique<Join>();
 	_commands["KICK"] = std::make_unique<Kick>();
 	_commands["PRIVMSG"] = std::make_unique<Privmsg>();
+	_commands["PART"] = std::make_unique<Part>();
 	_commands["INVITE"] = std::make_unique<Invite>();
 	_commands["TOPIC"] = std::make_unique<Topic>();
 }

@@ -10,7 +10,6 @@
 #include <map>
 #include <poll.h>
 #include <csignal>
-// #include <bits/stdc++.h>
 #include <arpa/inet.h>
 #include "Client.hpp"
 #include "Parser.hpp"
@@ -26,15 +25,15 @@ private:
     void    acceptClient();
     void    receiveFromClient(int fd);
 
-    std::string             _serverName;
-    int                     _port;
-    std::string             _password;
-    int                     _listenFd;
+    std::string                     _serverName;
+    int                             _port;
+    std::string                     _password;
+    int                             _listenFd;
 
-    std::vector<pollfd>     _pollFds;
-    std::map<int, Client>   _clients;
-    std::map<std::string, Channel>   _channels;
-    CmdCenter               _commandList;
+    std::vector<pollfd>             _pollFds;
+    std::map<int, Client>           _clients;
+    std::map<std::string, Channel>  _channels;
+    CmdCenter                       _commandList;
 
 public:
     Server(int  port, const std::string& password);
@@ -43,27 +42,22 @@ public:
     void    start();
     void    run();
     bool    commandExecute(Client &client, std::string cmd);
-     void    removeClient(int fd);
+    void    removeClient(int fd);
 
     //get functions
-    std::string getServerName() const;
-    std::string getPass() const;
-    std::map<int, Client>& getClientList();
-    const std::map<int, Client>& getClientList() const;
+    std::string                             getServerName() const;
+    std::string                             getPass() const;
+    std::map<int, Client>&                  getClientList();
+    const std::map<int, Client>&            getClientList() const;
 
-    std::map<std::string, Channel>& getChannelList();
-    const std::map<std::string, Channel>& getChannelList() const;
+    std::map<std::string, Channel>&         getChannelList();
+    const std::map<std::string, Channel>&   getChannelList() const;
 
 
     //messagging
     void sendErrorMsg(Client &client, std::string err_code, const std::string err_msg);
     void sendReplyMsg(Client &client, std::string code, const std::string &msg);
     void sendErrNicknameInUse(Client &client, const std::string &attemptedNick);
-    void sendNumeric(Client &client,
-                         const std::string &code,
-                         const std::vector<std::string> &params,
-                         const std::string &trailing);
-    
 
     //Command functions ?
     void addNewChannel(std::string channel_Name, Client &client);
