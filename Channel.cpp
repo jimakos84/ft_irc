@@ -42,6 +42,10 @@ bool Channel::getInviteOnlyStatus() const {
 	return (_inviteOnly);
 }
 
+bool Channel::getTopicRestrictionStatus() const {
+	return (_isTopicRestricted);
+}
+
 size_t Channel::getUserLimit() const {
 	return (_userLimit);
 }
