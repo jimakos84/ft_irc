@@ -79,7 +79,7 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     }
     
     channel->setTopic(newTopic);
-    std::string msg = channel.getChannelName() + " :" + channel.getTopic() + "\r\n"
+    std::string msg = channel->getChannelName() + " :" + channel->getTopic() + "\r\n";
     client.sendMsg(channel->getChannelName() + " :" + newTopic + "\r\n");
     return ;
 }
