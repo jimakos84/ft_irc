@@ -33,15 +33,15 @@ void Privmsg::ChannelReplyMsg(Client &client, Channel &channel, const std::strin
     }
 }
 
-static std::string joinText(const std::vector<std::string> &p, size_t start)
+static std::string joinText(const std::vector<std::string> &cmdParams)
 {
     std::string out;
-    size_t i = start;
-    while (i < p.size())
+    size_t i = 1;
+    while (i < cmdParams.size())
     {
         if (!out.empty())
             out += " ";
-        out += p[i];
+        out += cmdParams[i];
         i++;
     }
     return out;
@@ -57,7 +57,7 @@ void Privmsg::executeCmd(Server *server, Client &client, const std::vector<std::
 
     std::string target = cmdParams[0];
 
-    std::string text = joinText(cmdParams, 1);
+    std::string text = joinText(cmdParams);
     if (!text.empty() && text[0] == ':')
         text.erase(0, 1);
 

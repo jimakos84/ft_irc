@@ -51,6 +51,7 @@ class Client {
 		std::string getReal() const;
 		std::string getUser() const;
 		std::string	getClientFullIdentifier() const;
+		const std::set<std::string>& getJoinedChannels() const;
 
 
 		//message formatting for the server reply
