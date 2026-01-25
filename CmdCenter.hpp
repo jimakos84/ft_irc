@@ -13,6 +13,7 @@
 #include "./Commands/Join.hpp"
 #include "./Commands/Kick.hpp"
 #include "./Commands/Privmsg.hpp"
+#include "./Commands/Part.hpp"
 
 class CmdCenter {
     private:

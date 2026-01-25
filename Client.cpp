@@ -79,6 +79,11 @@ std::string	Client::getClientFullIdentifier() const {
 	return (_nickname + "!" + _username + "@" + _hostname);
 }
 
+const std::set<std::string>& Client::getJoinedChannels() const
+{
+    return _joined_channels;
+}
+
 
 void Client::sendMsg(const std::string &msg) {
 	ssize_t bytes_sent = ::send(this->_fd, msg.c_str(), msg.size(), 0);
