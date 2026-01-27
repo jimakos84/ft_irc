@@ -13,6 +13,14 @@ bool Kick::cmdNeedsRegistration() const {
     return (true);
 }
 
+// bool isChannelEmpty(Channel &chan) {
+//     std::set<Client*> members = chan.getMembers();
+//     if (members.empty())
+//         return true;
+//     else
+//         return false;
+// }
+
 void kickUser(Client &client, Client &target, Channel &channel, const std::vector<std::string> &cmdParams) {
     channel.removeClientFromMemberList(&target);
     channel.removeClientFromOperatorList(&target);   //this skips if target doesnt exist right?
@@ -35,18 +43,8 @@ void kickUser(Client &client, Client &target, Channel &channel, const std::vecto
 void Kick::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0 || cmdParams.size() == 1)
         return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Kick"), void(0));
-
-    /*//DELETE
-    for (unsigned long i = 0; i < cmdParams.size(); i++) {
-		std::cout << "Param[" << i << "]: " << cmdParams[i] << std::endl;
-	}
-
-    std::cout << "KICK channel: [" << cmdParams[0] << "] size="
-          << cmdParams[0].size() << "\n";
-*/
-
-    std::vector<std::string> kick_channels = splitJoinLine(cmdParams[0], ',');
-    std::vector<std::string> users_to_kick = splitJoinLine(cmdParams[1], ',');
+    std::vector<std::string> kick_channels = splitLine(cmdParams[0], ',');
+    std::vector<std::string> users_to_kick = splitLine(cmdParams[1], ',');
 
     if (!((kick_channels.size() == 1 && users_to_kick.size() >= 1) || kick_channels.size() == users_to_kick.size()))
         return (server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "KICK"), void(0));
@@ -77,5 +75,7 @@ void Kick::executeCmd(Server *server, Client &client, const std::vector<std::str
             continue;
         }
         kickUser(client, *target, channel, cmdParams);
+        if (isChannelEmpty(channel))
+            server->removeChannel(channel.getChannelName());
     }
 }
