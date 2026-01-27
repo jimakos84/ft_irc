@@ -28,6 +28,7 @@ SRC = main.cpp \
 	./Commands/Part.cpp \
 	./Commands/Invite.cpp \
 	./Commands/Topic.cpp \
+	./Commands/Quit.cpp \
 
 OBJ = $(SRC:.cpp=.o)
 

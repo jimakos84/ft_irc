@@ -239,6 +239,20 @@ void Server::addNewChannel(std::string channel_Name, Client &client) {
 	}
 }
 
+void Server::removeChannel(std::string channel_name) {
+	//delete
+	for (auto& [existing_channel, _] : _channels) {
+		std::cout << "Existing chan before: " << existing_channel << std::endl;
+	}
+
+	_channels.erase(channel_name);
+
+	//delete
+	for (auto& [chans, _] : _channels) {
+		std::cout << "After: " << chans << std::endl;
+	}
+}
+
 void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNick)
 {
     std::string curr = client.getNick().empty() ? "*" : client.getNick();
