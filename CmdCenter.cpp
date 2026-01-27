@@ -13,6 +13,7 @@ CmdCenter::CmdCenter() {
 	_commands["PART"] = std::make_unique<Part>();
 	_commands["INVITE"] = std::make_unique<Invite>();
 	_commands["TOPIC"] = std::make_unique<Topic>();
+	_commands["QUIT"] = std::make_unique<Quit>();
 }
 
 CmdCenter::~CmdCenter() {}
