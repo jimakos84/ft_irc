@@ -173,7 +173,6 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
 
 	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG" || cmdName == "WHOIS")
         return true;
-
     ParentCommand* cmd = _commandList.getCmd(cmdName);
 	if (!cmd)
 		return (sendErrorMsg(client, ERR_UNKNOWNCOMMAND, "Unknown command : " + cmdName), true);
@@ -199,7 +198,6 @@ void    Server::removeClient(int fd)
 			break;
 		}
 	}
-
 	std::cout << "Client disconnected: fd=" << fd << std::endl;
 }
 
@@ -248,4 +246,13 @@ void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNi
         + " :Nickname is already in use\r\n";
 
     client.sendMsg(msg);
+}
+
+void    Server::removeChannel(std::string channel_name) {
+	std::map<std::string, Channel>& channel_list = getChannelList();
+	
+	std::map<std::string, Channel>::iterator it = channel_list.find(channel_name);
+	if (it == channel_list.end())
+		return ;
+	channel_list.erase(it);
 }

@@ -23,22 +23,27 @@ Channel* Part::getChannelByName(Server *server, const std::string& name)
     return (nullptr);
 }
 
-std::vector<std::string> splitPartLine(const std::string &line, char delim) {
-    std::vector<std::string> result;
-    std::string current;
+bool isChannelEmpty(Channel &chan) {
+    std::set<Client*> members = chan.getMembers();
+    if (members.empty())
+        return true;
+    else
+        return false;
+}
 
-    for (char c : line)
+void broadcastToChannel(Client &client, Channel &chan, std::string msg) {
+    std::set<int> already_sent;
+    const std::set<Client*> &_members = chan.getMembers();
+    for (std::set<Client*>::const_iterator m = _members.begin(); m != _members.end(); ++m)
     {
-        if (c == delim)
-        {
-            result.push_back(current);
-            current.clear();
-        }
-        else
-            current += c;
+        Client *other = *m;
+        if (!other)
+            continue;
+        if (other->getFd() == client.getFd())
+            continue;
+        if (already_sent.insert(other->getFd()).second)
+            other->sendMsg(msg);
     }
-    result.push_back(current);
-    return result;
 }
 
 void Part::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
@@ -47,7 +52,7 @@ void Part::executeCmd(Server *server, Client &client, const std::vector<std::str
         return;
     }
     std::set<int> already_sent;
-    std::vector<std::string> channel_args = splitPartLine(cmdParams[0], ',');
+    std::vector<std::string> channel_args = splitLine(cmdParams[0], ',');
 
     for (std::string chans : channel_args) {
         if (chans.empty() || chans[0] != '#')
@@ -59,21 +64,10 @@ void Part::executeCmd(Server *server, Client &client, const std::vector<std::str
             continue;
         }
         client.sendMsg(msg);
+        broadcastToChannel(client, *chan, msg);
         chan->removeClientFromMemberList(&client);
         client.leaveChannel(chans);
-        std::cout << "Members of " << chans << " after PART:" << std::endl;
-
-        const std::set<Client*> &members = chan->getMembers();
-        for (std::set<Client*>::const_iterator it = members.begin();
-             it != members.end();
-             ++it)
-        {
-            Client *other = *it;
-            if (!other)
-                continue;
-            if (already_sent.insert(other->getFd()).second)
-                    other->sendMsg(msg);
-            std::cout << " - " << (*it)->getNick() << std::endl;
-        }
+        if (isChannelEmpty(*chan))
+            server->removeChannel(chans);
     }
 }

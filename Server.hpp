@@ -43,6 +43,8 @@ public:
     void    run();
     bool    commandExecute(Client &client, std::string cmd);
     void    removeClient(int fd);
+    void    removeChannel(std::string channel_name);
+
 
     //get functions
     std::string                             getServerName() const;
@@ -52,7 +54,6 @@ public:
 
     std::map<std::string, Channel>&         getChannelList();
     const std::map<std::string, Channel>&   getChannelList() const;
-
 
     //messagging
     void sendErrorMsg(Client &client, std::string err_code, const std::string err_msg);
