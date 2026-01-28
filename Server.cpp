@@ -146,7 +146,7 @@ void    Server::receiveFromClient(int fd)
 		return;
 	}
 	buffer.resize(bytes);
-	std::cout << "Buffer: " << buffer << std::endl;
+	//std::cout << "Buffer: " << buffer << std::endl;	//delete
 
 	Client& client = _clients.at(fd);
 	client.appendtoClientBuffer(buffer);
@@ -163,8 +163,7 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
 {
     std::string cmdName;
     std::vector<std::string> cmdParams;
-    Parser parser;
-    parser.splitIrcLine(full_cmd, cmdName, cmdParams);
+    splitIrcLine(full_cmd, cmdName, cmdParams);
 
     if (cmdName.empty()) {
         return true; }
@@ -173,7 +172,6 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
 
 	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG" || cmdName == "WHOIS")
         return true;
-
     ParentCommand* cmd = _commandList.getCmd(cmdName);
 	if (!cmd)
 		return (sendErrorMsg(client, ERR_UNKNOWNCOMMAND, "Unknown command : " + cmdName), true);
@@ -199,7 +197,6 @@ void    Server::removeClient(int fd)
 			break;
 		}
 	}
-
 	std::cout << "Client disconnected: fd=" << fd << std::endl;
 }
 
@@ -232,11 +229,15 @@ const std::map<std::string, Channel>& Server::getChannelList() const { return _c
 
 
 void Server::addNewChannel(std::string channel_Name, Client &client) {
-	auto result = _channels.emplace(channel_Name, Channel(channel_Name));	//returns std::pair<iterator, bool> wher iterator to the element (created or existing), bool/second if insertion happened or not
+	auto result = _channels.emplace(channel_Name, Channel(channel_Name));
 	if (result.second == true) {
 		Channel &channel = result.first->second;
 		channel.addClientToOperatorList(&client);
 	}
+}
+
+void Server::removeChannel(std::string channel_name) {
+	_channels.erase(channel_name);
 }
 
 void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNick)
@@ -248,4 +249,40 @@ void Server::sendErrNicknameInUse(Client &client, const std::string &attemptedNi
         + " :Nickname is already in use\r\n";
 
     client.sendMsg(msg);
+}
+
+Channel* Server::getChannelByName(Server *server, const std::string& name)
+{
+    std::map<std::string, Channel>& channel_list = server->getChannelList();
+    auto it = channel_list.find(name);
+    if (it != channel_list.end())
+    {
+        return (&it->second);
+    }
+    return (nullptr);
+}
+
+void splitIrcLine(const std::string& cmd_line, std::string& cmd,
+                         std::vector<std::string>& params)
+{
+    std::istringstream iss(cmd_line);
+    std::string token;
+
+    if (!(iss >> cmd))
+        return ;
+
+    while (iss >> token) {
+        if (!token.empty() && token[0] == ':') {
+            std::string trailing = token.substr(1);
+            std::string rest;
+            std::getline(iss, rest);
+            if (!rest.empty() && rest[0] == ' ')
+                rest.erase(0, 1);
+            if (!rest.empty())
+                trailing += " " + rest;
+            params.push_back(trailing);
+            break;
+        }
+        params.push_back(token);
+    }
 }

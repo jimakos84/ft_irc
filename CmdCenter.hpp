@@ -16,6 +16,7 @@
 #include "./Commands/Part.hpp"
 #include "./Commands/Invite.hpp"
 #include "./Commands/Topic.hpp"
+#include "./Commands/Quit.hpp"
 
 class CmdCenter {
     private:

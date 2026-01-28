@@ -13,18 +13,6 @@ bool Nick::cmdNeedsRegistration() const {
     return (false);
 }
 
-Channel* Nick::getChannelByName(Server *server, const std::string& name)
-{
-    std::map<std::string, Channel>& channel_list = server->getChannelList();
-    auto it = channel_list.find(name);
-    if (it != channel_list.end())
-    {
-        return (&it->second);
-    }
-    return (nullptr);
-}
-
-
 void Nick::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0) {
         server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Nick");
@@ -39,14 +27,13 @@ void Nick::executeCmd(Server *server, Client &client, const std::vector<std::str
 }
 
 void Nick::broadcastToChannels(Server *server, Client &client, std::string msg) {
-    (void)server;
     std::set<int> already_sent;
     const std::set<std::string>& channels = client.getJoinedChannels();
     for (std::set<std::string>::const_iterator it = channels.begin();
             it != channels.end();
             ++it)
     {
-        Channel*    _channel = getChannelByName(server, *it);
+        Channel*    _channel = server->getChannelByName(server, *it);
         const std::set<Client*> &_members = _channel->getMembers();
         for (std::set<Client*>::const_iterator m = _members.begin(); m != _members.end(); ++m)
         {

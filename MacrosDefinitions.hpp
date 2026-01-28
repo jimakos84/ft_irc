@@ -14,10 +14,10 @@
 #define RPL_ENDOFNAMES  	"366"	//"<channel> :End of NAMES list"
 
 //ERROR codes definition
-#define ERR_NOSUCHNICK          "401"
-#define ERR_NOTEXTTOSEND        "412"
+#define ERR_NOSUCHNICK          "401"   //"<nickname> :No such nick/channel"
 #define ERR_NOSUCHSERVER		"402"	//"<server name> :No such server"
 #define ERR_NOSUCHCHANNEL		"403"	//"<channel name> :No such channel"
+#define ERR_NOTEXTTOSEND        "412"   //":No text to send"
 #define ERR_UNKNOWNCOMMAND  	"421"	//"<command> :Unknown command"
 #define ERR_NICKNAMEINUSE   	"433"	//"<nick> :Nickname is already in use"
 #define ERR_USERNOTINCHANNEL	"441"	//"<nick> <channel> :They aren't on that channel"

@@ -2,13 +2,13 @@
 #pragma once
 
 #include "ParentCommand.hpp"
-#include "../Channel.hpp"
 
+class Channel;
 
-class Part : public ParentCommand {
+class Quit : public ParentCommand {
     public:
-        Part();
-        ~Part();
+        Quit();
+        ~Quit();
         bool cmdNeedsRegistration() const override;
         void executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) override;
 };

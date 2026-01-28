@@ -13,17 +13,6 @@ bool Topic::cmdNeedsRegistration() const {
     return (true);
 }
 
-Channel* Topic::getChannelByName(Server *server, const std::string& name)
-{
-    std::map<std::string, Channel>& channel_list = server->getChannelList();
-    auto it = channel_list.find(name);
-    if (it != channel_list.end())
-    {
-        return (&it->second);
-    }
-    return (nullptr);
-}
-
 static bool isOnlyWhitespace(const std::string& s)
 {
     for (char c : s)
@@ -39,7 +28,7 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     }
     std::string channelName = cmdParams[0];
 
-    Channel * channel = getChannelByName(server, channelName);
+    Channel * channel = server->getChannelByName(server, channelName);
 
     if (!channel)
     {
@@ -49,7 +38,7 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     if (cmdParams.size() < 2)
     {
         if (channel->getTopic() == "")
-        {    
+        {
             server->sendReplyMsg(client, RPL_NOTOPIC, channel->getChannelName() + " :No topic is set");
         }
         else
@@ -72,14 +61,13 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     std::string newTopic = cmdParams[1];
 
     if (newTopic.empty() || isOnlyWhitespace(newTopic))
-    {
-        channel->setTopic("");
-        server->sendReplyMsg(client, RPL_NOTOPIC, channel->getChannelName() + " :Topic is removed");
-        return ;
-    }
-    
+        newTopic = "";
+
     channel->setTopic(newTopic);
-    std::string msg = channel->getChannelName() + " :" + channel->getTopic() + "\r\n";
-    client.sendMsg(channel->getChannelName() + " :" + newTopic + "\r\n");
+    std::string topic_msg = ":" + client.getClientFullIdentifier() + " TOPIC " + channel->getChannelName() + " :" + channel->getTopic() + "\r\n";
+
+    for (Client* member : channel->getMembers())
+        member->sendMsg(topic_msg);
+
     return ;
 }

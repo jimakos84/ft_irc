@@ -12,7 +12,7 @@ bool Join::cmdNeedsRegistration() const {
     return (true);
 }
 
-std::vector<std::string> splitJoinLine(const std::string &line, char delim) {
+std::vector<std::string> splitLine(const std::string &line, char delim) {
     std::vector<std::string> result;
     std::string current;
 
@@ -54,14 +54,7 @@ bool Join::addClientToChannel(Server *server, Channel &channel, std::string sent
 	return (true);
 }
 
-void Join::ChannelReplyMsg(Server *server, Client &client, Channel &channel) const
-{
-    // const std::set<Client*>& members = channel.getMembers();
-    // std::cout << "JOIN broadcast members of " << channel.getChannelName() << ":\n";
-    // for (Client* m : members)
-    //     std::cout << " - " << m->getNick() << "\n";
-
-
+void Join::JoinReplyMsg(Server *server, Client &client, Channel &channel) const {
     std::string Join_msg = ":" + client.getClientFullIdentifier()
                          + " JOIN " + channel.getChannelName() + "\r\n";
 
@@ -99,21 +92,19 @@ void Join::executeCmd(Server *server, Client &client, const std::vector<std::str
         server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Join");
         return;
     }
-    std::vector<std::string> channels = splitJoinLine(cmdParams[0], ',');
+    std::vector<std::string> channels = splitLine(cmdParams[0], ',');
     std::vector<std::string> keys;
     if (cmdParams.size() > 1)
-        keys = splitJoinLine(cmdParams[1], ',');
+        keys = splitLine(cmdParams[1], ',');
     for (size_t i = 0; i < channels.size(); ++i) {
         server->addNewChannel(channels[i], client);
 
         std::map<std::string, Channel>& channel_list = server->getChannelList();
         auto it = channel_list.find(channels[i]);
-        // if (it == channel_list.end())
-        //     return;
         Channel& channel = it->second;
         std::string channel_key = (i < keys.size() ? keys[i] : "");
         if (!addClientToChannel(server, channel, channel_key, client))
             return;
-        ChannelReplyMsg(server, client, channel);
+        JoinReplyMsg(server, client, channel);
     }
 }
