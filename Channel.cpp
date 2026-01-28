@@ -72,78 +72,22 @@ const std::set<Client*>& Channel::getMembers() const {
 
 std::string	Channel::getChannelmode() {
 	std::string channel_modes;
-	std::string mode_params;
 
 	if (_inviteOnly == true)
 		channel_modes += "i";
-	if (_isTopicRestricted == true) {
+	if (_isTopicRestricted == true)
 		channel_modes += "t";
-		mode_params += _topic;
-	}
-	if (_hasKey == true) {
+
+	if (_hasKey == true)
 		channel_modes += "k";
-		mode_params += " " + _channel_key;
-	}
-	if (_userLimit != 0) {
+
+	if (_userLimit != 0)
 		channel_modes += "l";
-		mode_params += " " + std::to_string(_userLimit);
-	}
 
 	if (channel_modes.empty())
 		return ("");
 
-	return (channel_modes + " " + mode_params);
-}
-  
-//check if the channel has a valid name
-bool Channel::isValidChannelName(std::string name)
-{
-	if (name.empty() || name[0] != '#' || name.size() > 50)
-		return (false);
-	for (size_t i = 1; i < name.size(); i++)
-	{
-		if (name[i] == ' ' || name[i] == ',' || name[i] == ':' || (name[i] < 32 || name[i] == 127) )
-		return (false);
-	}
-	return (true);
-}
-
-//check if the channel exists already on server
-bool Channel::isExistingChannel(Server* server, std::string& channelName)
-{
-	std::map<std::string, Channel>   channel_list = server->getChannelList();
-	for (auto it = channel_list.begin(); it != channel_list.end(); it ++)
-	{
-		std::string curr_channelName = it->first;
-		if (curr_channelName == channelName)
-		{
-			return (true);
-		}
-	}
-	return (false);
-}
-
-//check if the channel is a invite-only channel
-bool Channel::isInviteOnly() const
-{
-	bool value;
-	if (_inviteOnly == true)
-		value = true;
-	else
-		value = false;
-	return (value);
-}
-
-void Channel::printChannelName(Server* server, Client& client, std::string name)
-{
-	if (isValidChannelName(name) == true)
-	{
-		server->sendReplyMsg(client, RPL_CREATED, name + ": valid channelname");
-	}
-	else 
-	{
-		server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, name + " : invalid channel name");
-	}
+	return (channel_modes);	
 }
 
 int Channel::addInvitedClient(Client *client, std::string VIP) {
@@ -154,13 +98,10 @@ int Channel::addInvitedClient(Client *client, std::string VIP) {
 	return (SUCCESS);
 }
 
-//removeInviteClient for JOIN Command
 void Channel::removeClientFromInvited(std::string NIP) {
 	_invitedClients.erase(NIP);
 }
 
-
-// MODE command:
 void Channel::addClientToMemberList(Client *client) {
 	_members.insert(client);
 }

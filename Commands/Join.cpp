@@ -54,7 +54,7 @@ bool Join::addClientToChannel(Server *server, Channel &channel, std::string sent
 	return (true);
 }
 
-void Join::ChannelReplyMsg(Server *server, Client &client, Channel &channel) const {
+void Join::JoinReplyMsg(Server *server, Client &client, Channel &channel) const {
     std::string Join_msg = ":" + client.getClientFullIdentifier()
                          + " JOIN " + channel.getChannelName() + "\r\n";
 
@@ -105,6 +105,6 @@ void Join::executeCmd(Server *server, Client &client, const std::vector<std::str
         std::string channel_key = (i < keys.size() ? keys[i] : "");
         if (!addClientToChannel(server, channel, channel_key, client))
             return;
-        ChannelReplyMsg(server, client, channel);
+        JoinReplyMsg(server, client, channel);
     }
 }
