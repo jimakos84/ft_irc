@@ -11,7 +11,6 @@ class Join : public ParentCommand {
         ~Join();
         bool cmdNeedsRegistration() const override;
         void executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) override;
-
 		bool addClientToChannel(Server *server, Channel &channel, std::string sent_channel_key, Client &client);
-		void ChannelReplyMsg(Server *server, Client &client, Channel &channel) const;
+		void JoinReplyMsg(Server *server, Client &client, Channel &channel) const;
 };

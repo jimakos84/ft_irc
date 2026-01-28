@@ -12,5 +12,4 @@ class Topic : public ParentCommand {
         ~Topic();
         bool cmdNeedsRegistration() const override;
         void executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) override;
-        Channel* getChannelByName(Server *server, const std::string& name);
 };

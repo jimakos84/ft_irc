@@ -36,30 +36,26 @@ class Channel {
 		void setUserLimit(size_t new_limit);
 
 		//Get functions
-		std::string		getChannelName() const;
-		bool 			getInviteOnlyStatus() const;
-		bool 			getTopicRestrictionStatus() const;
-		size_t 			getUserLimit() const;
-		std::string 	getTopic() const;
-		bool 			getHasKey() const;
-		std::string		getKeyValue() const;
-		std::string		getChannelmode();
-		const std::set<Client*>& getMembers() const;
+		std::string					getChannelName() const;
+		bool 						getInviteOnlyStatus() const;
+		bool 						getTopicRestrictionStatus() const;
+		size_t 						getUserLimit() const;
+		std::string 				getTopic() const;
+		bool 						getHasKey() const;
+		std::string					getKeyValue() const;
+		std::string					getChannelmode();
+		const std::set<Client*>&	getMembers() const;
+		size_t 						getMemberAmount() const;
+		Client*						getMemberByNick(std::string wanted_nick);
 
-		//other things, this and that
+		//utility functions
 		int 		addInvitedClient(Client *client, std::string VIP);
 		void 		removeClientFromInvited(std::string NIP);
 		void		addClientToMemberList(Client *client);
 		void		removeClientFromMemberList(Client *client);
-		size_t 		getMemberAmount() const;
 		void 		addClientToOperatorList(Client *client);
 		void 		removeClientFromOperatorList(Client *client);
 		bool 		isClientOperator(Client *wanted_client);
 		bool 		isClientMember(Client *wanted_client);
 		bool		isClientInvited(std::string wanted_client);
-		Client*		getMemberByNick(std::string wanted_nick);
-		void		printChannelName(Server* server, Client& client, std::string name); //debug delete
-		bool 		isValidChannelName(std::string name);
-		bool		isExistingChannel(Server* server, std::string& channelName);
-		bool 		isInviteOnly() const;
 };

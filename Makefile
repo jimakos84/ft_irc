@@ -10,9 +10,7 @@ RESET = \033[0m
 
 SRC = main.cpp \
 	input_validation.cpp \
-	error_handling.cpp \
 	Server.cpp \
-	Parser.cpp \
 	Client.cpp \
 	CmdCenter.cpp \
 	Channel.cpp \
