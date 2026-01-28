@@ -18,7 +18,7 @@ class Client {
 		std::set<std::string> _joined_channels;
 		std::string _buffer;
 		bool _isRegistered;
-		bool _isOperator; //implement
+		bool _isOperator;
 		bool _hasPass;
 		bool _hasNick;
 		bool _hasUser;
@@ -29,9 +29,9 @@ class Client {
 		Client();
 		Client(int fd, std::string host);
 
-		void appendtoClientBuffer(std::string incoming_data);
-		bool completeMessageExists();
-		std::string extractMessage();
+		void 		appendtoClientBuffer(std::string incoming_data);
+		bool 		completeMessageExists();
+		std::string	extractMessage();
 
 		bool isRegistered() const;
 		bool isOperator() const;
@@ -46,15 +46,15 @@ class Client {
 		void sendWelcomeMsg();
 
 		//Get functions
-		int 		getFd() const;
-		std::string getNick() const;
-		std::string getReal() const;
-		std::string getUser() const;
-		std::string	getClientFullIdentifier() const;
-		const std::set<std::string>& getJoinedChannels() const;
+		int 							getFd() const;
+		std::string						getNick() const;
+		std::string						getReal() const;
+		std::string 					getUser() const;
+		std::string						getClientFullIdentifier() const;
+		const std::set<std::string>&	getJoinedChannels() const;
 
 
-		//message formatting for the server reply
+		//utility functions
 		void sendMsg(const std::string &msg);
 		void addJoinedChannel(std::string channel_joined);
 		void leaveChannel(std::string channel_to_leave);

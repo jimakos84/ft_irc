@@ -13,20 +13,11 @@ bool Kick::cmdNeedsRegistration() const {
     return (true);
 }
 
-// bool isChannelEmpty(Channel &chan) {
-//     std::set<Client*> members = chan.getMembers();
-//     if (members.empty())
-//         return true;
-//     else
-//         return false;
-// }
-
 void kickUser(Client &client, Client &target, Channel &channel, const std::vector<std::string> &cmdParams) {
     channel.removeClientFromMemberList(&target);
-    channel.removeClientFromOperatorList(&target);   //this skips if target doesnt exist right?
+    channel.removeClientFromOperatorList(&target);
     client.leaveChannel(channel.getChannelName());
 
-    //sendmsg
     std::string kick_msg = ":" + client.getClientFullIdentifier() + " KICK " + channel.getChannelName()
     + " " + target.getNick();
     if (cmdParams.size() == 3)

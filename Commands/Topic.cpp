@@ -13,17 +13,6 @@ bool Topic::cmdNeedsRegistration() const {
     return (true);
 }
 
-Channel* Topic::getChannelByName(Server *server, const std::string& name)
-{
-    std::map<std::string, Channel>& channel_list = server->getChannelList();
-    auto it = channel_list.find(name);
-    if (it != channel_list.end())
-    {
-        return (&it->second);
-    }
-    return (nullptr);
-}
-
 static bool isOnlyWhitespace(const std::string& s)
 {
     for (char c : s)
@@ -39,7 +28,7 @@ void Topic::executeCmd(Server *server, Client &client, const std::vector<std::st
     }
     std::string channelName = cmdParams[0];
 
-    Channel * channel = getChannelByName(server, channelName);
+    Channel * channel = server->getChannelByName(server, channelName);
 
     if (!channel)
     {

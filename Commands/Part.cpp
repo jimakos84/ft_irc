@@ -12,17 +12,6 @@ bool Part::cmdNeedsRegistration() const {
     return (true);
 }
 
-Channel* Part::getChannelByName(Server *server, const std::string& name)
-{
-    std::map<std::string, Channel>& channel_list = server->getChannelList();
-    auto it = channel_list.find(name);
-    if (it != channel_list.end())
-    {
-        return (&it->second);
-    }
-    return (nullptr);
-}
-
 bool isChannelEmpty(Channel &chan) {
     std::set<Client*> members = chan.getMembers();
     if (members.empty())
@@ -58,7 +47,9 @@ void Part::executeCmd(Server *server, Client &client, const std::vector<std::str
         if (chans.empty() || chans[0] != '#')
             continue;
         std::string msg = ":" + client.getClientFullIdentifier() + " PART " + chans + "\r\n";
-        Channel *chan = getChannelByName(server, chans);
+        if (cmdParams.size() > 1 && !cmdParams[1].empty())
+            msg = ":" + client.getClientFullIdentifier() + " PART " + chans + " " + cmdParams[1] + " \r\n";
+        Channel *chan = server->getChannelByName(server, chans);
         if (!chan) {
             server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, chans + " :No such channel");
             continue;
