@@ -33,6 +33,7 @@
 #define ERR_UNKNOWNMODE			"472"	//"<char> :is unknown mode char to me for <channel>"
 #define ERR_INVITEONLYCHAN		"473"	//"<channel> :Cannot join channel (+i)"
 #define ERR_BADCHANNELKEY		"475"	//"<channel> :Cannot join channel (+k)"
+#define ERR_BADCHANMASK			"476"	//"<channel> :Bad Channel Mask"
 #define ERR_CHANOPRIVSNEEDED	"482"	//"<channel> :You're not channel operator"
 #define ERR_USERSDONTMATCH		"502"	//":Cannot change mode for other users"
 

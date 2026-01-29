@@ -24,7 +24,7 @@ void Invite::sendInvitationMsg(Server* server, Client& client, Client& invitee, 
 {
     server->sendReplyMsg(client, RPL_INVITING, invitee.getNick() + " " + channel->getChannelName());
     std::string serverName = server->getServerName();
-    std::string invitee_msg = client.getClientFullIdentifier() + " INVITE "  + invitee.getNick() + " :" + channel->getChannelName();
+    std::string invitee_msg = client.getNick() + " invites "  + invitee.getNick() + " to :" + channel->getChannelName();
     sendInviteeMsg(invitee, invitee_msg, serverName);
     return ;
 }
@@ -51,8 +51,8 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
     }
 
     std::string inviteeName = cmdParams[0];
-    std::string channelName = cmdParams[1];  
-    
+    std::string channelName = cmdParams[1];
+
     Client* invitee = getClientByNick(server, inviteeName);
     if (!invitee)
     {
@@ -63,7 +63,7 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
     Channel* channel = server->getChannelByName(server, channelName);
     if (!channel)
     {
-        server->sendErrorMsg(client, ERR_NOTONCHANNEL, channelName + " :No such channel");
+        server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, channelName + " :No such channel");
         return ;
     }
     if (channel->getInviteOnlyStatus())
@@ -73,7 +73,7 @@ void Invite::executeCmd(Server *server, Client &client, const std::vector<std::s
             server->sendErrorMsg(client, ERR_CHANOPRIVSNEEDED, channelName + " :You're not channel operator");
             return ;
         }
-        
+
     }
     if (channel->addInvitedClient(invitee, inviteeName) == ALREADY_MEMBER)
     {

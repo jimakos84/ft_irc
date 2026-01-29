@@ -164,26 +164,12 @@ void    Server::receiveFromClient(int fd)
         if (!client.completeMessageExists()) {
             break;}
 
-
 	    std::string msg = client.extractMessage();
-
-		//delte
-		std::cout << "extracted: " << msg << std::endl;
 
         if (!commandExecute(client, msg))
             break;
     }
 }
-
-/*void removeCtrlD(std::string &cmdName, std::vector<std::string> &cmdParams) {
-	cmdName.erase(std::remove(cmdName.begin(), cmdName.end(), '^'), cmdName.end());
-	cmdName.erase(std::remove(cmdName.begin(), cmdName.end(), 'D'), cmdName.end());
-
-	for (unsigned long i = 0; i < cmdParams.size(); i++) {
-		cmdParams[i].erase(std::remove(cmdParams[i].begin(), cmdParams[i].end(), '^'), cmdParams[i].end());
-		cmdParams[i].erase(std::remove(cmdParams[i].begin(), cmdParams[i].end(), 'D'), cmdParams[i].end());
-	}
-}*/
 
 bool Server::commandExecute(Client &client, std::string full_cmd)
 {
@@ -195,9 +181,7 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
         return true; }
 
 	std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
-	
-	//removeCtrlD(cmdName, cmdParams); 
-	
+
 	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG" || cmdName == "WHOIS")
         return true;
     ParentCommand* cmd = _commandList.getCmd(cmdName);

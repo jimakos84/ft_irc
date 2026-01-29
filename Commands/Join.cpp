@@ -86,6 +86,12 @@ void Join::JoinReplyMsg(Server *server, Client &client, Channel &channel) const 
                          channel.getChannelName() + " :End of /NAMES list.");
 }
 
+bool checkValidName(std::string channelName) {
+    std::regex channel_regex(R"(^#[^\s,\x07:]{1,49}$)");
+    if (!std::regex_match(channelName, channel_regex))
+        return (false);
+    return (true);
+}
 
 void Join::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0) {
@@ -97,6 +103,10 @@ void Join::executeCmd(Server *server, Client &client, const std::vector<std::str
     if (cmdParams.size() > 1)
         keys = splitLine(cmdParams[1], ',');
     for (size_t i = 0; i < channels.size(); ++i) {
+        if (checkValidName(channels[i]) == false) {
+            server->sendErrorMsg(client, ERR_BADCHANMASK, channels[i] + " " + " :Bad Channel Mask");
+            continue;
+        }
         server->addNewChannel(channels[i], client);
 
         std::map<std::string, Channel>& channel_list = server->getChannelList();
