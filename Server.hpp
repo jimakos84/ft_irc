@@ -11,6 +11,7 @@
 #include <poll.h>
 #include <csignal>
 #include <arpa/inet.h>
+#include <algorithm>
 #include "Client.hpp"
 #include "utils.hpp"
 #include "MacrosDefinitions.hpp"
