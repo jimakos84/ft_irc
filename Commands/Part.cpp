@@ -43,22 +43,31 @@ void Part::executeCmd(Server *server, Client &client, const std::vector<std::str
     std::set<int> already_sent;
     std::vector<std::string> channel_args = splitLine(cmdParams[0], ',');
 
-    for (std::string chans : channel_args) {
-        if (chans.empty() || chans[0] != '#')
+    for (std::string channel : channel_args) {
+        if (channel.empty() || channel[0] != '#')
             continue;
-        std::string msg = ":" + client.getClientFullIdentifier() + " PART " + chans + "\r\n";
+        std::string msg = ":" + client.getClientFullIdentifier() + " PART " + channel + "\r\n";
         if (cmdParams.size() > 1 && !cmdParams[1].empty())
-            msg = ":" + client.getClientFullIdentifier() + " PART " + chans + " " + cmdParams[1] + " \r\n";
-        Channel *chan = server->getChannelByName(server, chans);
+            msg = ":" + client.getClientFullIdentifier() + " PART " + channel + " " + cmdParams[1] + " \r\n";
+        Channel *chan = server->getChannelByName(server, channel);
         if (!chan) {
-            server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, chans + " :No such channel");
+            server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, channel + " :No such channel");
             continue;
+        }
+        const std::set<std::string> &joined_chans = client.getJoinedChannels();
+        if (joined_chans.find(channel) == joined_chans.end())
+        {
+            server->sendErrorMsg(client, ERR_NOTONCHANNEL,
+                                channel + " :You're not on that channel");
+            return;
         }
         client.sendMsg(msg);
         broadcastToChannel(client, *chan, msg);
         chan->removeClientFromMemberList(&client);
-        client.leaveChannel(chans);
+        if (chan->isClientOperator(&client))
+            chan->removeClientFromOperatorList(&client);
+        client.leaveChannel(channel);
         if (isChannelEmpty(*chan))
-            server->removeChannel(chans);
+            server->removeChannel(channel);
     }
 }

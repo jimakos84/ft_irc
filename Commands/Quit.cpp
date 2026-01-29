@@ -26,8 +26,18 @@ void Quit::executeCmd(Server *server, Client &client, const std::vector<std::str
 			continue;
 
 		for (Client* member : chan->getMembers()) {
-        if (member != &client)
-            member->sendMsg(quit_msg);
+			if (member != &client)
+				member->sendMsg(quit_msg);
+			}
+		}
+		for (const std::string& chanName : joined_channs) {
+			Channel *chan = server->getChannelByName(server, chanName);
+			if (!chan)
+				continue;
+			chan->removeClientFromMemberList(&client);
+			client.leaveChannel(chanName);
+			if (chan->getMembers().empty())
+				server->removeChannel(chan->getChannelName());
 		}
 	}
 	for (const std::string& chanName : joined_channs) {
