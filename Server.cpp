@@ -146,18 +146,44 @@ void    Server::receiveFromClient(int fd)
 		return;
 	}
 	buffer.resize(bytes);
-	//std::cout << "Buffer: " << buffer << std::endl;	//delete
+	std::cout << "Buffer: " << buffer << std::endl;	//delete
 
-	Client& client = _clients.at(fd);
-	client.appendtoClientBuffer(buffer);
+    auto it = _clients.find(fd);
+    if (it == _clients.end())
+        return;
 
-	while (client.completeMessageExists() == true)
-	{
-		std::string msg = client.extractMessage();
-		if (!commandExecute(client, msg))
-			break;
-	}
+    it->second.appendtoClientBuffer(buffer);
+
+    while (true)
+    {
+        auto clientIt = _clients.find(fd);
+        if (clientIt == _clients.end())
+            break;
+
+        Client &client = clientIt->second;
+        if (!client.completeMessageExists()) {
+            break;}
+
+
+	    std::string msg = client.extractMessage();
+
+		//delte
+		std::cout << "extracted: " << msg << std::endl;
+
+        if (!commandExecute(client, msg))
+            break;
+    }
 }
+
+/*void removeCtrlD(std::string &cmdName, std::vector<std::string> &cmdParams) {
+	cmdName.erase(std::remove(cmdName.begin(), cmdName.end(), '^'), cmdName.end());
+	cmdName.erase(std::remove(cmdName.begin(), cmdName.end(), 'D'), cmdName.end());
+
+	for (unsigned long i = 0; i < cmdParams.size(); i++) {
+		cmdParams[i].erase(std::remove(cmdParams[i].begin(), cmdParams[i].end(), '^'), cmdParams[i].end());
+		cmdParams[i].erase(std::remove(cmdParams[i].begin(), cmdParams[i].end(), 'D'), cmdParams[i].end());
+	}
+}*/
 
 bool Server::commandExecute(Client &client, std::string full_cmd)
 {
@@ -169,7 +195,9 @@ bool Server::commandExecute(Client &client, std::string full_cmd)
         return true; }
 
 	std::transform(cmdName.begin(), cmdName.end(), cmdName.begin(), toupper);
-
+	
+	//removeCtrlD(cmdName, cmdParams); 
+	
 	if (cmdName == "CAP" || cmdName == "WHO" || cmdName == "PONG" || cmdName == "WHOIS")
         return true;
     ParentCommand* cmd = _commandList.getCmd(cmdName);
@@ -285,4 +313,34 @@ void splitIrcLine(const std::string& cmd_line, std::string& cmd,
         }
         params.push_back(token);
     }
+}
+
+void    Server::cleanClient(int fd) {
+    std::map<int, Client>& clients = getClientList();
+    std::map<int, Client>::iterator it = clients.find(fd);
+    if (it == clients.end())
+        return;
+    Client* client = &it->second;
+    std::string quit_msg = ":" + client->getClientFullIdentifier() + " QUIT\r\n";
+
+	std::set<std::string> joined_channs = client->getJoinedChannels();
+    for (const std::string& chanName : joined_channs) {
+        Channel *chan = this->getChannelByName(this, chanName);
+        if (!chan)
+            continue;
+
+        for (Client *member : chan->getMembers()) {
+        if (member != client)
+            member->sendMsg(quit_msg);
+        }
+        }
+        for (const std::string& chanName : joined_channs) {
+            Channel *chan = this->getChannelByName(this, chanName);
+            if (!chan)
+                continue;
+            chan->removeClientFromMemberList(client);
+            client->leaveChannel(chanName);
+            if (chan->getMembers().empty())
+                this->removeChannel(chan->getChannelName());
+        }
 }

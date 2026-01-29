@@ -83,6 +83,15 @@ void Privmsg::executeCmd(Server *server, Client &client, const std::vector<std::
             server->sendErrorMsg(client, ERR_NOSUCHCHANNEL, target + " :No such channel");
             return;
         }
+
+        const std::set<std::string> &joined_chans = client.getJoinedChannels();
+        if (joined_chans.find(target) == joined_chans.end())
+        {
+            server->sendErrorMsg(client, ERR_CANNOTSENDTOCHAN,
+                                target + " :Cannot send to channel");
+            return;
+        }
+        
         ChannelReplyMsg(client, it->second, text);
     }
     else {
