@@ -58,7 +58,7 @@ void Part::executeCmd(Server *server, Client &client, const std::vector<std::str
         if (joined_chans.find(channel) == joined_chans.end())
         {
             server->sendErrorMsg(client, ERR_NOTONCHANNEL,
-                                channel + " :Cannot send to channel");
+                                channel + " :You're not on that channel");
             return;
         }
         client.sendMsg(msg);
