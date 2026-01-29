@@ -137,11 +137,13 @@ void    Server::receiveFromClient(int fd)
 	{
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
 			return;
+		cleanClient(fd);
 		removeClient(fd);
 		return;
 	}
 	if (bytes == 0)
 	{
+		cleanClient(fd);
 		removeClient(fd);
 		return;
 	}
@@ -285,4 +287,34 @@ void splitIrcLine(const std::string& cmd_line, std::string& cmd,
         }
         params.push_back(token);
     }
+}
+
+void	Server::cleanClient(int fd) {
+	std::map<int, Client>& clients = getClientList();
+	std::map<int, Client>::iterator it = clients.find(fd);
+	if (it == clients.end())
+		return;
+	Client* client = &it->second;
+	std::string quit_msg = ":" + client->getClientFullIdentifier() + " QUIT\r\n";
+	std::set<int> already_sent;
+	std::set<std::string> joined_channs = client->getJoinedChannels();
+	for (const std::string& chanName : joined_channs) {
+		Channel *chan = this->getChannelByName(this, chanName);
+		if (!chan)
+			continue;
+
+		for (Client* member : chan->getMembers()) {
+        if (member != client)
+            member->sendMsg(quit_msg);
+		}
+		}
+		for (const std::string& chanName : joined_channs) {
+			Channel *chan = this->getChannelByName(this, chanName);
+			if (!chan)
+				continue;
+			chan->removeClientFromMemberList(client);
+			client->leaveChannel(chanName);
+			if (chan->getMembers().empty())
+				this->removeChannel(chan->getChannelName());
+		}
 }

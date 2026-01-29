@@ -17,6 +17,7 @@
 #define ERR_NOSUCHNICK          "401"   //"<nickname> :No such nick/channel"
 #define ERR_NOSUCHSERVER		"402"	//"<server name> :No such server"
 #define ERR_NOSUCHCHANNEL		"403"	//"<channel name> :No such channel"
+#define ERR_CANNOTSENDTOCHAN    "404"   //"<channel name> :Cannot send to channel"
 #define ERR_NOTEXTTOSEND        "412"   //":No text to send"
 #define ERR_UNKNOWNCOMMAND  	"421"	//"<command> :Unknown command"
 #define ERR_NICKNAMEINUSE   	"433"	//"<nick> :Nickname is already in use"
