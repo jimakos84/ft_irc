@@ -175,6 +175,8 @@ void Mode::handleChannelMode(Server *server, Client &client, const std::vector<s
 		return (server->sendErrorMsg(client, ERR_NOSUCHCHANNEL , cmdParams[0] + " :No such channel"), void(0));
 
 	Channel &channel = it->second;
+	if (channel.isClientMember(&client) == false)
+		return (server->sendErrorMsg(client, ERR_NOTONCHANNEL , it->first + " :You're not on that channel"), void(0));
 	if (cmdParams.size() == 1)
 		return (server->sendReplyMsg(client, RPL_CHANNELMODEIS, cmdParams[0] + " +" + channel.getChannelmode()));
 

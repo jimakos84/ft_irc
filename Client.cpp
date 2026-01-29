@@ -11,6 +11,8 @@ void Client::appendtoClientBuffer(std::string incoming_data) {
 }
 
 bool Client::completeMessageExists() {
+	if (_buffer.empty())
+		return(false);
 	size_t found = _buffer.find("\n");
 	if (found != std::string::npos)
 		return (true);
