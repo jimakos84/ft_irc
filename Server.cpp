@@ -137,11 +137,13 @@ void    Server::receiveFromClient(int fd)
 	{
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
 			return;
+		cleanClient(fd);
 		removeClient(fd);
 		return;
 	}
 	if (bytes == 0)
 	{
+		cleanClient(fd);
 		removeClient(fd);
 		return;
 	}

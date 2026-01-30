@@ -62,5 +62,5 @@ class Server
 		void 	addNewChannel(std::string channel_Name, Client &client);
 		void    removeClient(int fd);
 		void    removeChannel(std::string channel_name);
-		void    cleanClient(int fd);
+		void	cleanClient(int fd);
 };

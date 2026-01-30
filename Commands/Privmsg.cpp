@@ -93,18 +93,18 @@ void Privmsg::executeCmd(Server *server, Client &client, const std::vector<std::
         }
         
         ChannelReplyMsg(client, it->second, text);
-    }
-    else {
-        std::map<int, Client>& client_list = server->getClientList();
-        std::map<int, Client>::iterator it = client_list.begin();
-        while (it != client_list.end()){
-            if (it->second.getNick() == target){
-                ClientPrivMsg(client, it->second, text);
-                return;
-            }
-            ++it;
         }
-        server->sendErrorMsg(client, ERR_NOSUCHNICK, target + " :No such nick");
-        return;
-    }
+        else {
+            std::map<int, Client>& client_list = server->getClientList();
+            std::map<int, Client>::iterator it = client_list.begin();
+            while (it != client_list.end()){
+                if (it->second.getNick() == target){
+                    ClientPrivMsg(client, it->second, text);
+                    return;
+                }
+                ++it;
+            }
+            server->sendErrorMsg(client, ERR_NOSUCHNICK, target + " :No such nick");
+            return;
+        }
 }
