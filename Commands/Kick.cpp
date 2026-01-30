@@ -16,7 +16,7 @@ bool Kick::cmdNeedsRegistration() const {
 void kickUser(Client &client, Client &target, Channel &channel, const std::vector<std::string> &cmdParams) {
     channel.removeClientFromMemberList(&target);
     channel.removeClientFromOperatorList(&target);
-    client.leaveChannel(channel.getChannelName());
+    target.leaveChannel(channel.getChannelName());
 
     std::string kick_msg = ":" + client.getClientFullIdentifier() + " KICK " + channel.getChannelName()
     + " " + target.getNick();

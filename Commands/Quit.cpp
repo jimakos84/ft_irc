@@ -18,7 +18,7 @@ void Quit::executeCmd(Server *server, Client &client, const std::vector<std::str
 	if (!cmdParams.empty())
 		quit_msg += " :" + cmdParams[0];
 	quit_msg += "\r\n";
-	
+
 	std::set<std::string> joined_channs = client.getJoinedChannels();
 	for (const std::string& chanName : joined_channs) {
 		Channel *chan = server->getChannelByName(server, chanName);
@@ -39,7 +39,7 @@ void Quit::executeCmd(Server *server, Client &client, const std::vector<std::str
 			if (chan->getMembers().empty())
 				server->removeChannel(chan->getChannelName());
 		}
-	}
+
 	for (const std::string& chanName : joined_channs) {
 		Channel *chan = server->getChannelByName(server, chanName);
 		if (!chan)

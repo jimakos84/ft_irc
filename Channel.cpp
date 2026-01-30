@@ -6,7 +6,7 @@ Channel::Channel(const std::string given_name) : _name(given_name) {
 	_topic = "";
 	_channel_key = "";
 	_inviteOnly = false;
-	_isTopicRestricted = false;
+	_isTopicRestricted = true;
 	_hasKey = false;
 	_userLimit = 0;
 }
@@ -87,7 +87,7 @@ std::string	Channel::getChannelmode() {
 	if (channel_modes.empty())
 		return ("");
 
-	return (channel_modes);	
+	return (channel_modes);
 }
 
 int Channel::addInvitedClient(Client *client, std::string VIP) {

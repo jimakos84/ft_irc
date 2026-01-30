@@ -13,17 +13,28 @@ bool Nick::cmdNeedsRegistration() const {
     return (false);
 }
 
+bool checkValidity(const std::string new_nick) {
+    std::regex nick_regex(R"(^[A-Za-z\[\]\\`_^{}|][A-Za-z0-9\-\[\]\\`_^{}|]{0,8}$)");
+    if (!std::regex_match(new_nick, nick_regex))
+        return (false);
+    return (true);
+}
+
 void Nick::executeCmd(Server *server, Client &client, const std::vector<std::string> cmdParams) {
     if (cmdParams.size() == 0) {
         server->sendErrorMsg(client, ERR_NEEDMOREPARAMS, "More Parameters needed for Nick");
         return;
     }
+    if (checkValidity(cmdParams[0]) == false)
+        return (server->sendErrorMsg(client, ERR_ERRONEUSNICKNAME, ":Erroneous nickname"), void(0));
     if (client.getNick() == "") {
-        checkNickandSet(server, client, cmdParams[0]);
+        checkNickandSet(server, client, cmdParams[0], true);
         client.setRegistered();
     }
+    else if (client.isRegistered() == false)
+        return ;
     else
-        checkNickandSet(server, client, cmdParams[0]);
+        checkNickandSet(server, client, cmdParams[0], false);
 }
 
 void Nick::broadcastToChannels(Server *server, Client &client, std::string msg) {
@@ -48,9 +59,8 @@ void Nick::broadcastToChannels(Server *server, Client &client, std::string msg) 
     }
 }
 
-void Nick::checkNickandSet(Server *server, Client &client, const std::string &new_nick)
+void Nick::checkNickandSet(Server *server, Client &client, const std::string &new_nick, bool registration)
 {
-    (void)server;
     if (new_nick == client.getNick())
         return;
 
@@ -65,8 +75,10 @@ void Nick::checkNickandSet(Server *server, Client &client, const std::string &ne
             return;
         }
     }
-    std::string msg = ":" + client.getClientFullIdentifier() + " NICK " + ":" + new_nick + "\r\n";
-    client.sendMsg(msg);
-    broadcastToChannels(server, client, msg);
+    if (registration == false) {
+        std::string msg = ":" + client.getClientFullIdentifier() + " NICK " + ":" + new_nick + "\r\n";
+        client.sendMsg(msg);
+        broadcastToChannels(server, client, msg);
+    }
     client.setNick(new_nick);
 }
