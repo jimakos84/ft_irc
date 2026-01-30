@@ -148,7 +148,7 @@ void    Server::receiveFromClient(int fd)
 		return;
 	}
 	buffer.resize(bytes);
-	std::cout << "Buffer: " << buffer << std::endl;	//delete
+	// std::cout << "Buffer: " << buffer << std::endl;
 
     auto it = _clients.find(fd);
     if (it == _clients.end())

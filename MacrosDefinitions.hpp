@@ -20,6 +20,7 @@
 #define ERR_CANNOTSENDTOCHAN    "404"   //"<channel name> :Cannot send to channel"
 #define ERR_NOTEXTTOSEND        "412"   //":No text to send"
 #define ERR_UNKNOWNCOMMAND  	"421"	//"<command> :Unknown command"
+#define ERR_ERRONEUSNICKNAME	"432" 	//"<nick> :Erroneous nickname"
 #define ERR_NICKNAMEINUSE   	"433"	//"<nick> :Nickname is already in use"
 #define ERR_USERNOTINCHANNEL	"441"	//"<nick> <channel> :They aren't on that channel"
 #define ERR_NOTONCHANNEL        "442"   //"<channel> :You're not on that channel" (when client tries to performa channel cmd for which they are not member)
