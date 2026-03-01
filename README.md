@@ -1,13 +1,13 @@
-ft_irc
+===ft_irc===
 
 A minimal IRC (Internet Relay Chat) server implemented in C++ as part of the 42 curriculum.
 The project focuses on TCP socket programming, client-server architecture, and protocol handling using low-level Unix system calls.
 
-Features
+===Features===
 
 TCP socket communication
 
-Multiple client connection handling
+Multi-client handling using poll()
 
 IRC command parsing and execution
 
@@ -15,12 +15,31 @@ Channel creation and management
 
 Message broadcasting between clients
 
-Graceful client disconnection handling
+Graceful connection and disconnection handling
 
-How It Works
+===Architecture Overview===
 
-The server listens on a specified port and accepts multiple client connections using TCP sockets.
-Incoming client messages are parsed according to IRC protocol rules, and commands are executed server-side.
+The server uses an event-driven model built around poll() to monitor multiple client sockets simultaneously.
+
+Core flow:
+
+Create and bind server socket
+
+Listen for incoming connections
+
+Accept new clients
+
+Use poll() to monitor:
+
+New incoming connections
+
+Incoming client messages
+
+Parse IRC commands and execute corresponding server logic
+
+Broadcast messages to relevant channels or users
+
+This structure allows the server to handle multiple clients efficiently without blocking.
 
 The implementation focuses on:
 
@@ -32,7 +51,7 @@ Robust parsing of client input
 
 Handling edge cases and invalid commands
 
-Installation & Usage
+===Installation & Usage===
 
 Compile:
 
@@ -44,7 +63,7 @@ Run:
 
 Connect using an IRC client (e.g., irssi or another IRC client application).
 
-Technical Highlights
+===Technical Highlights===
 
 Implemented low-level socket communication using socket, bind, listen, accept
 
@@ -54,7 +73,7 @@ Designed structured command parsing system
 
 Focused on avoiding memory leaks and undefined behavior
 
-What I Learned
+===What I Learned===
 
 Practical TCP/IP networking fundamentals
 
