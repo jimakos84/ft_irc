@@ -1,86 +1,46 @@
-===ft_irc===
+# ft_irc
 
-A minimal IRC (Internet Relay Chat) server implemented in C++ as part of the 42 curriculum.
-The project focuses on TCP socket programming, client-server architecture, and protocol handling using low-level Unix system calls.
+A collaborative implementation of an IRC (Internet Relay Chat) server written in C++ as part of the Hive Helsinki curriculum.
 
-===Features===
+## Overview
 
-TCP socket communication
+The goal of this project was to implement the core IRC protocol and build a server capable of handling multiple simultaneous clients communicating over TCP. Along the way we learned modern C++, networking, protocol design, debugging and collaborative development.
 
-Multi-client handling using poll()
+## Features
 
-IRC command parsing and execution
+- Multiple simultaneous client connections
+- User registration and authentication
+- Channel creation and management
+- Private and channel messaging
+- Invitations and channel modes
+- Robust command parsing and protocol handling
 
-Channel creation and management
+## Tech Stack
 
-Message broadcasting between clients
+- C++
+- TCP/IP sockets
+- Event-driven I/O
+- Git for collaborative development
 
-Graceful connection and disconnection handling
+## My Contribution
 
-===Architecture Overview===
+I worked primarily on implementing and improving core server functionality, debugging protocol behaviour, command handling and integration with teammates' work. The project also gave me practical experience collaborating through Git, pull requests and code reviews.
 
-The server uses an event-driven model built around poll() to monitor multiple client sockets simultaneously.
+## Challenges
 
-Core flow:
+One of the biggest challenges was keeping client state consistent while handling multiple users simultaneously and ensuring behaviour matched the IRC specification. Debugging protocol edge cases and integrating changes from multiple contributors were valuable learning experiences.
 
-Create and bind server socket
+## What I Learned
 
-Listen for incoming connections
+- Object-oriented design in C++
+- TCP/IP networking fundamentals
+- Building software collaboratively with Git
+- Debugging complex systems
+- Reading and implementing a network protocol specification
 
-Accept new clients
+## Build
 
-Use poll() to monitor:
-
-New incoming connections
-
-Incoming client messages
-
-Parse IRC commands and execute corresponding server logic
-
-Broadcast messages to relevant channels or users
-
-This structure allows the server to handle multiple clients efficiently without blocking.
-
-The implementation focuses on:
-
-Efficient socket handling
-
-Proper memory management
-
-Robust parsing of client input
-
-Handling edge cases and invalid commands
-
-===Installation & Usage===
-
-Compile:
-
+```bash
 make
-
-Run:
-
 ./ircserv <port> <password>
-
-Connect using an IRC client (e.g., irssi or another IRC client application).
-
-===Technical Highlights===
-
-Implemented low-level socket communication using socket, bind, listen, accept
-
-Managed multiple client states and message routing
-
-Designed structured command parsing system
-
-Focused on avoiding memory leaks and undefined behavior
-
-===What I Learned===
-
-Practical TCP/IP networking fundamentals
-
-Designing a structured server architecture
-
-Handling concurrent client interactions
-
-Debugging complex runtime issues
-
-Writing stable C++ code under system-level constraints
+```
